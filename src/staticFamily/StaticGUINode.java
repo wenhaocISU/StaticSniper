@@ -18,7 +18,7 @@ public class StaticGUINode {
 	private Map<String, String> eventHandlers;
 	private boolean isCustomView;
 	private ArrayList<String> leavingInfo;
-	
+
 	public StaticGUINode(String type, String id, Node node, boolean isCustom) {
 		ID = id;
 		if (ID.contains("/"))
@@ -30,7 +30,7 @@ public class StaticGUINode {
 		leavingInfo = new ArrayList<String>();
 		parseEventHandlers();
 	}
-	
+
 	private void parseEventHandlers() {
 		NamedNodeMap attrs = Node.getAttributes();
 		for (int i = 0, len = attrs.getLength(); i < len; i++) {
@@ -41,32 +41,32 @@ public class StaticGUINode {
 				eventHandlers.put(attrName, attrValue);
 		}
 	}
-	
-	public String getID() {	
+
+	public String getID() {
 		return ID;
 	}
-	
+
 	public String getType() {
 		return Type;
 	}
- 
+
 	public NamedNodeMap getAttributes() {
 		return Node.getAttributes();
 	}
-	
+
 	public boolean hasEventHandler(String EventType) {
 		boolean result = false;
-		for (Map.Entry<String, String> entry: eventHandlers.entrySet()) {
+		for (Map.Entry<String, String> entry : eventHandlers.entrySet()) {
 			String key = entry.getKey();
 			if (key.equals(EventType))
 				result = true;
 		}
 		return result;
 	}
-	
+
 	public String getEventHandler(String EventType) {
 		String result = "";
-		for (Map.Entry<String, String> entry: eventHandlers.entrySet()) {
+		for (Map.Entry<String, String> entry : eventHandlers.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
 			if (key.equals(EventType))
@@ -74,12 +74,12 @@ public class StaticGUINode {
 		}
 		return result;
 	}
-	
+
 	public void setEventHandler(String EventType, String methodName) {
 		Element e = (Element) Node;
 		e.setAttribute(EventType, methodName);
 	}
-	
+
 	public Map<String, String> getAllEventHandlers() {
 		return eventHandlers;
 	}
@@ -87,61 +87,63 @@ public class StaticGUINode {
 	public boolean isCustomView() {
 		return isCustomView;
 	}
-	
+
 	public void addLeavingEventHandler(String info) {
 		if (!leavingInfo.contains(info))
 			leavingInfo.add(info);
 	}
-	
+
 	public ArrayList<String> getLeavingInfo() {
 		return leavingInfo;
 	}
-	
+
 	public boolean hasLeavingEventHandlers() {
-		if (leavingInfo.size()>0)
+		if (leavingInfo.size() > 0)
 			return true;
 		return false;
 	}
-	
+
 	public Map<String, ArrayList<String>> getLeavingEvents(String activityName) {
 		// format: (Event Handler1, target1, target2),...
 		Map<String, ArrayList<String>> ehMap = new HashMap<String, ArrayList<String>>();
 		// "StartActivity",foundTargetActvt?,inOnCreate?,inEventHandler?,classname,methodsig,linenumber,targetActvt,NumberOfOnCreate,NumberOfViews,actvt1,...(layout&&widgetID),...
 		// "setContentView",foundTargetLayout?,inOnCreate?,inEventHandler?,classname,methodsig,linenumber,targetLayout,NumberOfOnCreate,NumberOfViews,actvt1,...(layout&&widgetID),...
-			for (String lI : leavingInfo) {
-				if (!activityName.equals(lI.split(",")[0]))	continue;
-				String theEH = lI.split(",")[1];
-				String target = lI.split(",")[2] + "," + lI.split(",")[3];
-				if (!ehMap.containsKey(theEH)) {
-					ArrayList<String> ts = new ArrayList<String>();
+		for (String lI : leavingInfo) {
+			if (!activityName.equals(lI.split(",")[0]))
+				continue;
+			String theEH = lI.split(",")[1];
+			String target = lI.split(",")[2] + "," + lI.split(",")[3];
+			if (!ehMap.containsKey(theEH)) {
+				ArrayList<String> ts = new ArrayList<String>();
+				ts.add(target);
+				ehMap.put(theEH, ts);
+			} else {
+				ArrayList<String> ts = ehMap.get(theEH);
+				if (!ts.contains(target))
 					ts.add(target);
-					ehMap.put(theEH, ts);
-				}
-				else {
-					ArrayList<String> ts = ehMap.get(theEH);
-					if (!ts.contains(target))
-						ts.add(target);
-					ehMap.put(theEH, ts);
-				}
+				ehMap.put(theEH, ts);
 			}
+		}
 		return ehMap;
 	}
-	
+
 	public ArrayList<String> getStayingEvents(String activityName) {
 		ArrayList<String> results = new ArrayList<String>();
-		for (Map.Entry<String, String> entry: eventHandlers.entrySet())
+		for (Map.Entry<String, String> entry : eventHandlers.entrySet())
 			results.add(entry.getKey());
-		for (Map.Entry<String, ArrayList<String>> entry: getLeavingEvents(activityName).entrySet())
+		for (Map.Entry<String, ArrayList<String>> entry : getLeavingEvents(
+				activityName).entrySet())
 			if (results.contains(entry.getKey()))
 				results.remove(entry.getKey());
 		return results;
 	}
-	
-	public ArrayList<String> getLeavingTargets(String actvtName, String eventHandler) {
+
+	public ArrayList<String> getLeavingTargets(String actvtName,
+			String eventHandler) {
 		ArrayList<String> result = new ArrayList<String>();
 		if (getLeavingEvents(actvtName).containsKey(eventHandler))
 			result = getLeavingEvents(actvtName).get(eventHandler);
 		return result;
 	}
-	
+
 }
