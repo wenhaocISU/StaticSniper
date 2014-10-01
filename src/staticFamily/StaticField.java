@@ -7,34 +7,32 @@ import java.util.ArrayList;
 public class StaticField implements Serializable {
 
 	private String declaration;
-	private String name;
-	private String type;
+	private String fullJimpleSignature;
 	private int modifiers;
-	private StaticClass declaringClass;
+	private String declaringClassName;
 	private ArrayList<String> inCallSourceSigs = new ArrayList<String>();
 
-	public StaticField(String name, String type, int modifiers,
-			String declaration) {
-		this.name = name;
-		this.type = type;
-		this.modifiers = modifiers;
-		this.declaration = declaration;
+	public StaticField(String fullSig) {
+		this.fullJimpleSignature = fullSig;
+		this.modifiers = -1;
+		this.declaration = "";
 	}
 
+	//////////// read attributes
 	public String getName() {
-		return name;
+		return getSubJimpleSignature().split(" ")[1];
 	}
 
 	public String getType() {
-		return type;
+		return getSubJimpleSignature().split(" ")[0];
 	}
 
-	public String getSubSignature() {
-		return type + " " + name;
+	public String getSubJimpleSignature() {
+		return fullJimpleSignature.substring(fullJimpleSignature.indexOf(": ")+2, fullJimpleSignature.length()-1);
 	}
 
-	public String getFullSignature() {
-		return declaringClass.getName() + ": " + getSubSignature();
+	public String getFullJimpleSignature() {
+		return fullJimpleSignature;
 	}
 
 	public int getModifiers() {
@@ -46,18 +44,34 @@ public class StaticField implements Serializable {
 	}
 
 	public String getDeclaringClassName() {
-		return declaringClass.getName();
+		return declaringClassName;
+	}
+
+	public StaticClass getDeclaringClass(StaticApp testApp) {
+		return testApp.findClassByName(declaringClassName);
 	}
 
 	public ArrayList<String> getInCallSourceSigs() {
 		return inCallSourceSigs;
 	}
 
+	//////////// add/set attributes
+	
 	public void addInCallSource(String sourceSig) {
 		inCallSourceSigs.add(sourceSig);
 	}
-
-	public void setDeclaringClass(StaticClass declaringClass) {
-		this.declaringClass = declaringClass;
+	
+	public void setDeclaration(String declaration) {
+		this.declaration = declaration;
 	}
+	
+	public void setDeclaringClass(String declaringClassName) {
+		this.declaringClassName = declaringClassName;
+	}
+	
+	public void setModifiers(int modifiers) {
+		this.modifiers = modifiers;
+	}
+	
+
 }

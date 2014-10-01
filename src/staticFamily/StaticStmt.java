@@ -5,23 +5,22 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class StaticStmt implements Serializable {
 
-	private StaticMethod familyMethod;
-	private String jimpleCode;
+	private String jimpleStmt;
+	private String familyMethodSig;
 	private boolean containsMethodCall;
 	private boolean containsFieldRef;
-	private String targetClass, targetSubSig;
+	private String targetSignature;
 
-	public StaticStmt(String stmt, boolean hasInvokeExpr, boolean hasFieldRef,
-			String targetClass, String targetSubSig) {
-		this.jimpleCode = stmt;
-		this.containsMethodCall = hasInvokeExpr;
-		this.containsFieldRef = hasFieldRef;
-		this.targetClass = targetClass;
-		this.targetSubSig = targetSubSig;
+	public StaticStmt(String stmt) {
+		this.jimpleStmt = stmt;
+		this.containsMethodCall = false;
+		this.containsFieldRef = false;
+		this.targetSignature = "";
 	}
 
+	///////// read attributes
 	public String getJimpleStmt() {
-		return jimpleCode;
+		return jimpleStmt;
 	}
 
 	public boolean containsMethodCall() {
@@ -32,20 +31,32 @@ public class StaticStmt implements Serializable {
 		return containsFieldRef;
 	}
 
-	public StaticMethod getResidingMethod() {
-		return familyMethod;
+	public String getFamilyMethodSignature() {
+		return familyMethodSig;
+	} 
+	
+	public StaticMethod getFamilyMethod(StaticApp testApp) {
+		return testApp.findMethodByFullSignature(familyMethodSig);
 	}
 
-	public void setMethod(StaticMethod m) {
-		this.familyMethod = m;
+	public String getTargetSignature() {
+		return targetSignature;
+	}
+	//////// add/set attributes
+
+	public void setFamilyMethod(String fullSig) {
+		this.familyMethodSig = fullSig;
 	}
 
-	public String getTargetClass() {
-		return targetClass;
+	public void setTargetSignature(String targetSig) {
+		this.targetSignature = targetSig;
 	}
 
-	public String getTargetSubSig() {
-		return targetSubSig;
+	public void setContainsFieldRef(boolean flag) {
+		this.containsFieldRef = flag;
 	}
-
+	
+	public void setContainsMethodCall(boolean flag) {
+		this.containsMethodCall = flag;
+	}
 }

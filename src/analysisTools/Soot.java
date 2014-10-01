@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,6 @@ import soot.SceneTransformer;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import soot.SootMethodRef;
 import soot.Transform;
 import soot.Type;
 import soot.Unit;
@@ -44,166 +42,148 @@ public class Soot {
 
 	public static void generateAppData(final StaticApp testApp) {
 
-		PackManager.v().getPack("wjtp")
-				.add(new Transform("wjtp.initAnalysis", new SceneTransformer() {
-					@Override
-					protected void internalTransform(String arg0,
-							Map<String, String> arg1) {
-						CHATransformer.v().transform();
-						Chain<SootClass> sootClasses = Scene.v()
-								.getApplicationClasses();
-						for (SootClass sC : sootClasses) {
-							String outerClassName = "";
-							boolean isInnerClass = false;
-							if (sC.isInnerClass()
-									&& !sC.getOuterClass().getName()
-											.equals(sC.getName())) {
-								outerClassName = sC.getOuterClass().getName();
-								isInnerClass = true;
-							}
-							String superClassName = "";
-							if (sC.hasSuperclass())
-								superClassName = sC.getSuperclass().getName();
-							ArrayList<String> interfaceList = new ArrayList<String>();
-							for (SootClass ic : sC.getInterfaces()) {
-								interfaceList.add(ic.getName());
-							}
-							List<StaticField> fList = new ArrayList<StaticField>();
-							for (SootField sF : sC.getFields()) {
-								StaticField f = new StaticField(sF.getName(),
-										sF.getType().toString(), sF
-												.getModifiers(), sF
-												.getDeclaration());
-								fList.add(f);
-							}
-							List<StaticMethod> mList = new ArrayList<StaticMethod>();
-							for (SootMethod sM : sC.getMethods()) {
-								String sM_jimple = "";
-								ArrayList<String> parameters = new ArrayList<String>();
-								for (Type pT : sM.getParameterTypes()) {
-									parameters.add(pT.toString());
-								}
-								Map<String, String> paramVariables = new HashMap<String, String>();
-								Map<String, String> localVariables = new HashMap<String, String>();
-								List<StaticStmt> statements = new ArrayList<StaticStmt>();
-								if (!sM.isAbstract() && !sM.isNative())
-									try {
-										Body b = sM.retrieveActiveBody();
-										sM_jimple = b.toString();
-										for (Local l : b.getLocals()) {
-											localVariables.put(l.getName(), l
-													.getType().toString());
+		PackManager.v().getPack("wjtp").add(new Transform("wjtp.initAnalysis", new SceneTransformer() {
+			@Override
+			protected void internalTransform(String phaseName, Map<String, String> options) {
+				Chain<SootClass> sootClasses = Scene.v().getApplicationClasses();
+				for (SootClass sootC : sootClasses) {
+					StaticClass c = testApp.findClassByName(sootC.getName());
+					boolean needAddClass = false;
+					if (c == null) {
+						needAddClass = true;
+						c = new StaticClass(sootC.getName());
+					}
+					// class attributes
+					c.setIsAbstract(sootC.isAbstract());
+					c.setIsInDEX(true);
+					c.setIsInterface(sootC.isInterface());
+					c.setModifiers(sootC.getModifiers());
+					c.setSuperClass(sootC.getSuperclass().getName());
+					if (sootC.getInterfaceCount()>0)
+						for (SootClass intf : sootC.getInterfaces())
+							c.addInterface(intf.getName());
+					if (c.isInnerClass() && !sootC.getOuterClass().getName().equals(sootC.getName())
+						&& sootC.getOuterClass().isApplicationClass()) {
+						c.setIsInnerClass(true);
+						c.setOuterClass(sootC.getOuterClass().getName());
+						StaticClass outerC = testApp.findClassByName(c.getOuterClassName());
+						boolean needAddOuterC = false;
+						if (outerC == null) {
+							needAddOuterC = true;
+							outerC = new StaticClass(c.getOuterClassName());
+						}
+						outerC.addInnerClass(c.getName());
+						if (needAddOuterC)
+							testApp.addClass(outerC);
+					}
+					// fields
+					for (SootField sootF : sootC.getFields()) {
+						StaticField f = c.findFieldByFullSignature(sootF.getSignature());
+						boolean needAddF = false;
+						if (f == null) {
+							needAddF = true;
+							f = new StaticField(sootF.getSignature());
+						}
+						f.setDeclaration(sootF.getDeclaration());
+						f.setDeclaringClass(c.getName());
+						f.setModifiers(sootF.getModifiers());
+						if (needAddF)
+							c.addField(f);
+					}
+					// methods
+					for (SootMethod sootM : sootC.getMethods()) {
+						StaticMethod m = c.findMethodByFullSignature(sootM.getSignature());
+						boolean needAddM = false;
+						if (m == null) {
+							needAddM = true;
+							m = new StaticMethod(sootM.getSignature());
+						}
+						m.setBytecodeSignature(sootM.getBytecodeSignature());
+						m.setDeclaringClass(c.getName());
+						m.setIsAbstract(sootM.isAbstract());
+						m.setIsNative(sootM.isNative());
+						for (Type paramType : sootM.getParameterTypes())
+							m.addParameterType(paramType.toString());
+						if (!m.isAbstract() && !m.isNative())
+						try {
+							Body b = sootM.retrieveActiveBody();
+							if (b != null) {
+								m.setHasBody(true);
+								m.setJimpleCode(b.toString());
+								for (Unit u : b.getUnits()) {
+									Stmt sootS = (Stmt) u;
+									StaticStmt s = new StaticStmt(sootS.toString());
+									if (sootS.containsFieldRef()) {
+										s.setContainsFieldRef(true);
+										SootField targetSF = sootS.getFieldRef().getField();
+										s.setTargetSignature(targetSF.getSignature());
+										SootClass targetSC = targetSF.getDeclaringClass();
+										if (targetSC.isApplicationClass()) {
+											m.addFieldRef(targetSF.getSignature());
+											StaticClass targetC = testApp.findClassByName(targetSC.getName());
+											if (targetSC.getName().equals(c.getName()))
+												targetC = c;
+											StaticField targetF = testApp.findFieldByFullSignature(targetSF.getSignature());
+											boolean needAddTF = false, needAddTC = false;
+											if (targetC == null) {
+												needAddTC = true;
+												targetC = new StaticClass(targetSC.getName());
+											}
+											if (targetF == null) {
+												needAddTF = true;
+												targetF = new StaticField(targetSF.getSignature());
+											}
+											targetF.addInCallSource(m.getFullJimpleSignature());
+											if (needAddTF)
+												targetC.addField(targetF);
+											if (needAddTC)
+												testApp.addClass(targetC);
 										}
-										for (Local l : b.getParameterLocals()) {
-											paramVariables.put(l.getName(), l
-													.getType().toString());
-										}
-										for (Unit u : b.getUnits()) {
-											Stmt stmt = (Stmt) u;
-											boolean hasFieldRef = false, hasMethodCall = false;
-											String targetClass = "", targetSubSig = "";
-											if (stmt.containsFieldRef()) {
-												SootField targetField = stmt
-														.getFieldRef()
-														.getField();
-												if (targetField
-														.getDeclaringClass()
-														.isApplicationClass()) {
-													hasFieldRef = true;
-													targetClass = targetField
-															.getDeclaringClass()
-															.getName();
-													targetSubSig = targetField
-															.getSubSignature();
+									} else if (sootS.containsInvokeExpr()) {
+										s.setContainsMethodCall(true);
+										SootMethod targetSM = sootS.getInvokeExpr().getMethod();
+										s.setTargetSignature(targetSM.getSignature());
+										SootClass targetSC = targetSM.getDeclaringClass();
+										if (targetSC.isApplicationClass())
+										try {
+											Body targetB = targetSM.retrieveActiveBody();
+											if (targetB != null) {
+												m.addOutCallTarget(targetSM.getSignature());
+												StaticClass targetC = testApp.findClassByName(targetSC.getName());
+												if (targetSC.getName().equals(c.getName()))
+													targetC = c;
+												StaticMethod targetM = testApp.findMethodByFullSignature(targetSM.getSignature());
+												boolean needAddTC = false, needAddTM = false;
+												if (targetC == null) {
+													needAddTC = true;
+													targetC = new StaticClass(targetSC.getName());
 												}
-											} else if (stmt
-													.containsInvokeExpr()) {
-												SootMethodRef targetMethod = stmt
-														.getInvokeExpr()
-														.getMethodRef();
-												if (targetMethod
-														.declaringClass()
-														.isApplicationClass()) {
-													hasMethodCall = true;
-													targetClass = targetMethod
-															.declaringClass()
-															.getName();
-													targetSubSig = targetMethod
-															.getSubSignature()
-															.toString();
+												if (targetM == null) {
+													needAddTM = true;
+													targetM = new StaticMethod(targetSM.getSignature());
+												}
+												targetM.addInCallSource(m.getFullJimpleSignature());
+												if (needAddTM) {
+													targetC.addMethod(targetM);
+												}
+												if (needAddTC) {
+													testApp.addClass(targetC);
 												}
 											}
-											StaticStmt s = new StaticStmt(stmt
-													.toString(), hasMethodCall,
-													hasFieldRef, targetClass,
-													targetSubSig);
-											statements.add(s);
-										}
-									} catch (Exception e) {
+										}	catch (Exception e1) {}
 									}
-								StaticMethod m = new StaticMethod(sM
-										.getSignature(), sM.getSubSignature(),
-										sM.getBytecodeSignature(), sM
-												.isAbstract(), sM.isNative(),
-										sM.getModifiers(), parameters,
-										localVariables, paramVariables,
-										sM_jimple, statements);
-								for (StaticStmt stmt : m.getStatements())
-									stmt.setMethod(m);
-								mList.add(m);
-							}
-
-							StaticClass c = new StaticClass(sC.getName(),
-									interfaceList, fList, mList, isInnerClass,
-									sC.isAbstract(), sC.isApplicationClass(),
-									sC.isInterface(), sC.getModifiers(),
-									superClassName, outerClassName);
-							for (StaticMethod m : c.getMethodList())
-								m.setDeclaringClass(c);
-							for (StaticField f : c.getFieldList())
-								f.setDeclaringClass(c);
-							c.setStaticApp(testApp);
-							testApp.addClass(c);
-						}
-						for (StaticClass c : testApp.getClassList()) {
-							if (c.isInnerClass()) {
-								if (c.getOuterClassName().equals(c.getName()))
-									continue;
-								StaticClass outerC = testApp.findClassByName(c
-										.getOuterClassName());
-								if (outerC != null)
-									outerC.addInnerClass(c.getName());
-							}
-							for (StaticMethod m : c.getMethodList()) {
-								for (StaticStmt stmt : m.getStatements()) {
-									if (stmt.containsFieldRef()) {
-										StaticField targetF = testApp
-												.findFieldBySubSignature(
-														stmt.getTargetClass(),
-														stmt.getTargetSubSig());
-										if (targetF != null) {
-											m.addFieldRef(targetF
-													.getFullSignature());
-											targetF.addInCallSource(m
-													.getJimpleFullSignature());
-										}
-									} else if (stmt.containsMethodCall()) {
-										StaticMethod targetM = testApp
-												.findMethodBySubSignature(
-														stmt.getTargetClass(),
-														stmt.getTargetSubSig());
-										if (targetM != null) {
-											m.addOutCallTarget(targetM
-													.getJimpleFullSignature());
-											targetM.addInCallSource(m
-													.getJimpleFullSignature());
-										}
-									}
+									m.addStmt(s);
 								}
 							}
-						}
+						}	catch (Exception e) {}
+						if (needAddM)
+							c.addMethod(m);;
 					}
-				}));
+					if (needAddClass)
+						testApp.addClass(c);
+				}
+			}
+		}));
 
 		String[] sootArgs = { "-d", testApp.outPath + "/soot/Jimples", "-f",
 				"J", "-src-prec", "apk", "-ire", "-allow-phantom-refs", "-w",

@@ -7,60 +7,47 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class StaticClass implements Serializable {
 
-	private StaticApp app;
 	private String name;
 	private int modifiers;
 
-	private List<StaticMethod> methods = new ArrayList<StaticMethod>();
-	private List<StaticField> fields = new ArrayList<StaticField>();
+	private List<StaticMethod> methods;
+	private List<StaticField> fields;
 
-	private ArrayList<String> interfaceNames = new ArrayList<String>();
-	private ArrayList<String> innerClassNames = new ArrayList<String>();
-	private String superClassName = "";
-	private String outerClassName = "";
+	private ArrayList<String> interfaceNames;
+	private ArrayList<String> innerClassNames;
+	private String superClassName;
+	private String outerClassName;
 
 	private boolean isInnerClass;
 	private boolean isInterface;
 	private boolean isAbstract;
 	private boolean isInDEX;
-
 	private boolean isActivity;
 	private boolean isMainActivity;
 
 	public StaticClass(String className) {
 		name = className;
+		modifiers = -1;
+		
+		methods = new ArrayList<StaticMethod>();
+		fields = new ArrayList<StaticField>();
+		
+		interfaceNames = new ArrayList<String>();
+		innerClassNames = new ArrayList<String>();
+		superClassName = "";
+		outerClassName = "";
+		
+		isInnerClass = false;
 		isInterface = false;
 		isAbstract = false;
 		isInDEX = false;
 		isActivity = false;
 		isMainActivity = false;
-	}
-
-	public StaticClass(String className, ArrayList<String> interfaceList,
-			List<StaticField> fList, List<StaticMethod> mList,
-			boolean isInnerClass, boolean isAbstractClass,
-			boolean isApplicationClass, boolean isInterface, int modifiers,
-			String superClassName, String outerClassName) {
-
-		this.name = className;
-		this.modifiers = modifiers;
-		this.interfaceNames = interfaceList;
-		this.fields = fList;
-		this.methods = mList;
-		this.isInnerClass = isInnerClass;
-		this.isAbstract = isAbstractClass;
-		this.isInDEX = isApplicationClass;
-		this.isInterface = isInterface;
-		this.superClassName = superClassName;
-		this.outerClassName = outerClassName;
-
-		this.isActivity = false;
-		this.isMainActivity = false;
+		
 
 	}
 
-	// //////////// query methods
-
+	// //////////// get attributes
 	public boolean hasInnerClass() {
 		if (innerClassNames.size() > 0)
 			return true;
@@ -83,6 +70,10 @@ public class StaticClass implements Serializable {
 			return false;
 	}
 
+	public boolean isInDEX() {
+		return isInDEX;
+	}
+	
 	public boolean isInnerClass() {
 		return isInnerClass;
 	}
@@ -114,6 +105,10 @@ public class StaticClass implements Serializable {
 	public String getOuterClassName() {
 		return outerClassName;
 	}
+	
+	public StaticClass getOuterClass(StaticApp testApp) {
+		return testApp.findClassByName(outerClassName);
+	}
 
 	public int getModifier() {
 		return modifiers;
@@ -134,25 +129,46 @@ public class StaticClass implements Serializable {
 	public List<String> getInnerClassNames() {
 		return innerClassNames;
 	}
-
-	public boolean isInDEX() {
-		return isInDEX;
+	
+	public List<StaticClass> getInnerClassList(StaticApp testApp) {
+		List<StaticClass> result = new ArrayList<StaticClass>();
+		for (String innerC : innerClassNames) {
+			result.add(testApp.findClassByName(innerC));
+		}
+		return result;
+	}
+	
+	public List<Integer> getAllSourceLineNumbers() {
+		List<Integer> result = new ArrayList<Integer>();
+		for (StaticMethod m : methods)
+			for (int i : m.getAllSourceLineNumbers())
+				result.add(i);
+		return result;
 	}
 
-	public StaticField findField(String fieldName) {
+	////////// find method, field
+	
+	public StaticField findFieldByName(String fieldName) {
 		for (StaticField f : fields)
 			if (f.getName().equals(fieldName))
 				return f;
 		return null;
 	}
 
-	public StaticField findField(String fieldName, String fieldType) {
+	public StaticField findFieldByNameType(String fieldName, String fieldType) {
 		for (StaticField f : fields)
 			if (f.getName().equals(fieldName) && f.getType().equals(fieldType))
 				return f;
 		return null;
 	}
-
+	
+	public StaticField findFieldByFullSignature(String fullSig) {
+		for (StaticField f : fields)
+			if (f.getFullJimpleSignature().equals(fullSig))
+				return f;
+		return null;
+	}
+	
 	public StaticMethod findMethodByName(String methodName) {
 		for (StaticMethod m : methods)
 			if (m.getName().equals(methodName))
@@ -162,14 +178,14 @@ public class StaticClass implements Serializable {
 
 	public StaticMethod findMethodByFullSignature(String fullSig) {
 		for (StaticMethod m : methods)
-			if (m.getJimpleFullSignature().equals(fullSig))
+			if (m.getFullJimpleSignature().equals(fullSig))
 				return m;
 		return null;
 	}
 
 	public StaticMethod findMethodBySubSignature(String subSig) {
 		for (StaticMethod m : methods) {
-			if (m.getJimpleSubSignature().equals(subSig))
+			if (m.getSubJimpleSignature().equals(subSig))
 				return m;
 		}
 		return null;
@@ -189,12 +205,22 @@ public class StaticClass implements Serializable {
 		return null;
 	}
 
-	public List<Integer> getAllSourceLineNumbers() {
-		List<Integer> result = new ArrayList<Integer>();
-		for (StaticMethod m : methods)
-			for (int i : m.getAllSourceLineNumbers())
-				result.add(i);
-		return result;
+	////////// add/set attributes
+
+	public void addInnerClass(String innerClassName) {
+		innerClassNames.add(innerClassName);
+	}
+
+	public void addInterface(String interfaceName) {
+		interfaceNames.add(interfaceName);
+	}
+
+	public void addMethod(StaticMethod m) {
+		methods.add(m);
+	}
+	
+	public void addField(StaticField f) {
+		fields.add(f);
 	}
 
 	public void setIsActivity(boolean flag) {
@@ -204,17 +230,34 @@ public class StaticClass implements Serializable {
 	public void setIsMainActivity(boolean flag) {
 		isMainActivity = flag;
 	}
-
-	public void addInnerClass(String innerClassName) {
-		innerClassNames.add(innerClassName);
+	
+	public void setIsInnerClass(boolean flag) {
+		isInnerClass = flag;
 	}
 
-	public void setStaticApp(StaticApp app) {
-		this.app = app;
+	public void setIsInterface(boolean flag) {
+		isInterface = flag;
+	}
+	
+	public void setIsAbstract(boolean flag) {
+		isAbstract = flag;
 	}
 
-	public StaticApp getStaticApp() {
-		return app;
+	public void setIsInDEX(boolean flag) {
+		isInDEX = flag;
 	}
+
+	public void setModifiers(int modifiers) {
+		this.modifiers = modifiers;
+	}
+
+	public void setSuperClass(String superClassName) {
+		this.superClassName = superClassName;
+	}
+	
+	public void setOuterClass(String outerClassName) {
+		this.outerClassName = outerClassName;
+	}
+
 
 }

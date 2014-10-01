@@ -76,7 +76,7 @@ public class StaticApp implements Serializable {
 	public StaticMethod findMethodByFullSignature(String fullSig) {
 		for (StaticClass c : classList)
 			for (StaticMethod m : c.getMethodList())
-				if (m.getJimpleFullSignature().equals(fullSig))
+				if (m.getFullJimpleSignature().equals(fullSig))
 					return m;
 		return null;
 	}
@@ -100,18 +100,19 @@ public class StaticApp implements Serializable {
 		return null;
 	}
 
-	public StaticField findFieldBySubSignature(String className,
-			String fieldSubSig) {
+	public StaticField findFieldBySubSignature(String className, String fieldSubSig) {
 		for (StaticField f : findClassByName(className).getFieldList())
-			if (f.getSubSignature().equals(fieldSubSig))
+			if (f.getSubJimpleSignature().equals(fieldSubSig))
 				return f;
 		return null;
 	}
 
 	public StaticField findFieldByFullSignature(String fullSig) {
-		String className = fullSig.split(": ")[0];
-		String fieldSubSig = fullSig.split(": ")[1];
-		return findFieldBySubSignature(className, fieldSubSig);
+		for (StaticClass c : classList)
+			for (StaticField f : c.getFieldList())
+				if (f.getFullJimpleSignature().equals(fullSig))
+					return f;
+		return null;
 	}
 
 }
