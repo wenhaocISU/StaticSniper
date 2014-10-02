@@ -47,11 +47,11 @@ public class Main {
 					System.out.println("        " + s);
 			}
 			for (StaticField f : c.getFieldList()) {
-				System.out.println(" f " + f.getFullSignature());
+				System.out.println(" f " + f.getFullJimpleSignature());
 			}
 			for (StaticMethod m : c.getMethodList()) {
 				System.out.println(" m " + m.getBytecodeSignature() + " " + m.getReturnLineNumber());
-				for (String p : m.getParameters()) {
+				for (String p : m.getParameterTypes()) {
 					System.out.print("    " + p);
 				}
 				for (StaticStmt stmt : m.getStatements()) {
