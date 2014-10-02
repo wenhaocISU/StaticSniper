@@ -9,6 +9,20 @@ public class StaticStmt implements Serializable {
 	private String familyMethodSig;
 	private boolean containsMethodCall;
 	private boolean containsFieldRef;
+	private boolean containsBreakpointStmt;
+	private boolean containsAssignStmt;
+	private boolean containsIdentityStmt;
+	private boolean containsEnterMonitorStmt;
+	private boolean containsExitMonitorStmt;
+	private boolean containsGotoStmt;
+	private boolean containsIfStmt;
+	private boolean containsLookupSwitchStmt;
+	private boolean containsNopStmt;
+	private boolean containsRetStmt;
+	private boolean containsReturnStmt;
+	private boolean containsReturnVoidStmt;
+	private boolean containsTableSwitchStmt;
+	private boolean containsThrowStmt;
 	private String targetSignature;
 
 	public StaticStmt(String stmt) {
@@ -42,6 +56,63 @@ public class StaticStmt implements Serializable {
 	public String getTargetSignature() {
 		return targetSignature;
 	}
+	
+	public boolean containsLookupSwitchStmt() {
+		return containsLookupSwitchStmt;
+	}
+	
+	public boolean containsIfStmt() {
+		return containsIfStmt;
+	}
+	
+	public boolean containsGotoStmt() {
+		return containsGotoStmt;
+	}
+	
+	public boolean containsExitMonitorStmt() {
+		return containsExitMonitorStmt;
+	}
+	
+	public boolean containsBreakpointStmt() {
+		return containsBreakpointStmt;
+	}
+	
+	public boolean containsAssignStmt() {
+		return containsAssignStmt;
+	}
+	
+	public boolean containsIdentityStmt() {
+		return containsIdentityStmt;
+	}
+	
+	public boolean containsEnterMonitorStmt() {
+		return containsEnterMonitorStmt;
+	}
+	
+	public boolean containsThrowStmt() {
+		return containsThrowStmt;
+	}
+	
+	public boolean containsTableSwitchStmt() {
+		return containsTableSwitchStmt;
+	}
+	
+	public boolean containsReturnVoidStmt() {
+		return containsReturnVoidStmt;
+	}
+	
+	public boolean containsReturnStmt() {
+		return containsReturnStmt;
+	}
+	
+	public boolean containsNopStmt() {
+		return containsNopStmt;
+	}
+	
+	public boolean containsRetStmt() {
+		return containsRetStmt;
+	}
+	
 	//////// add/set attributes
 
 	public void setFamilyMethod(String fullSig) {
@@ -59,4 +130,61 @@ public class StaticStmt implements Serializable {
 	public void setContainsMethodCall(boolean flag) {
 		this.containsMethodCall = flag;
 	}
+
+	public void setContainsBreakpointStmt(boolean containsBreakpointStmt) {
+		this.containsBreakpointStmt = containsBreakpointStmt;
+	}
+
+	public void setContainsAssignStmt(boolean containsAssignStmt) {
+		this.containsAssignStmt = containsAssignStmt;
+	}
+
+	public void setContainsIdentityStmt(boolean containsIdentityStmt) {
+		this.containsIdentityStmt = containsIdentityStmt;
+	}
+
+	public void setContainsEnterMonitorStmt(boolean containsEnterMonitorStmt) {
+		this.containsEnterMonitorStmt = containsEnterMonitorStmt;
+	}
+
+	public void setContainsExitMonitorStmt(boolean containsExitMonitorStmt) {
+		this.containsExitMonitorStmt = containsExitMonitorStmt;
+	}
+
+	public void setContainsGotoStmt(boolean containsGotoStmt) {
+		this.containsGotoStmt = containsGotoStmt;
+	}
+
+	public void setContainsIfStmt(boolean containsIfStmt) {
+		this.containsIfStmt = containsIfStmt;
+	}
+
+	public void setContainsLookupSwitchStmt(boolean containsLookupSwitchStmt) {
+		this.containsLookupSwitchStmt = containsLookupSwitchStmt;
+	}
+
+	public void setContainsRetStmt(boolean containsRetStmt) {
+		this.containsRetStmt = containsRetStmt;
+	}
+
+	public void setContainsNopStmt(boolean containsNopStmt) {
+		this.containsNopStmt = containsNopStmt;
+	}
+
+	public void setContainsReturnStmt(boolean containsReturnStmt) {
+		this.containsReturnStmt = containsReturnStmt;
+	}
+
+	public void setContainsReturnVoidStmt(boolean containsReturnVoidStmt) {
+		this.containsReturnVoidStmt = containsReturnVoidStmt;
+	}
+
+	public void setContainsTableSwitchStmt(boolean containsTableSwitchStmt) {
+		this.containsTableSwitchStmt = containsTableSwitchStmt;
+	}
+
+	public void setContainsThrowStmt(boolean containsThrowStmt) {
+		this.containsThrowStmt = containsThrowStmt;
+	}
+	
 }

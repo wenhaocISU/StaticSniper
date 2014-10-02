@@ -30,7 +30,6 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
-import soot.jimple.toolkits.callgraph.CHATransformer;
 import soot.util.Chain;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;

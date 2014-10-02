@@ -11,14 +11,21 @@ public class StaticField implements Serializable {
 	private int modifiers;
 	private String declaringClassName;
 	private ArrayList<String> inCallSourceSigs = new ArrayList<String>();
+	private boolean isDeclaredHere;
 
 	public StaticField(String fullSig) {
 		this.fullJimpleSignature = fullSig;
 		this.modifiers = -1;
 		this.declaration = "";
+		this.isDeclaredHere = false;
 	}
 
 	//////////// read attributes
+	
+	public boolean isDeclaredHere() {
+		return isDeclaredHere;
+	}
+	
 	public String getName() {
 		return getSubJimpleSignature().split(" ")[1];
 	}
@@ -73,5 +80,8 @@ public class StaticField implements Serializable {
 		this.modifiers = modifiers;
 	}
 	
+	public void setIsDeclaredHere(boolean flag) {
+		this.isDeclaredHere = flag;
+	}
 
 }

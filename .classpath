@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="libs/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="libs/polyglot.jar"/>
 	<classpathentry kind="lib" path="libs/util-2.0.3-dev.jar"/>
-	<classpathentry kind="lib" path="libs/sootclasses-trunk.jar"/>
+	<classpathentry kind="lib" path="libs/sootclasses-trunk.jar" sourcepath="libs/sootsources-trunk.jar"/>
 	<classpathentry kind="lib" path="libs/guava-16.0.jar"/>
 	<classpathentry kind="lib" path="libs/heros.jar"/>
 	<classpathentry kind="lib" path="libs/android.jar"/>

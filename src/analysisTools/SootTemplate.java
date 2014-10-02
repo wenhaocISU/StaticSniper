@@ -21,38 +21,14 @@ public class SootTemplate {
 		PackManager.v().getPack("wjtp").add(new Transform("wjtp.myTransform", new SceneTransformer() {
 					protected void internalTransform(String phaseName, Map<String, String> options) {
 						// this method will be called only once
-
+						System.out.println("WJTP");
 					}
 				}));
 
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 					protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
 						// this method will be called on each method in the DEX
-						System.out.println("--Method-- " + b.getMethod().getName());
-						for (Unit u : b.getUnits()) {
-							System.out.println(" -Unit- " + u.toString());
-							for (UnitBox uB : u.getUnitBoxes()) {
-								System.out.println("  *unit box:  ");
-								System.out.println("    " + uB.getUnit().toString());
-							}
-							for (ValueBox vB : u.getDefBoxes()) {
-								System.out.println("  *def box:  ");
-								System.out.println("    " + vB.getValue().getType().toString());
-							}
-							for (ValueBox vB : u.getUseAndDefBoxes()) {
-								System.out.println("  *use and def box:  ");
-								System.out.println("    " + vB.getValue().getType().toString());
-							}
-							for (UnitBox uB : u.getBoxesPointingToThis()) {
-								System.out.println("  *boxes pointing to this:  ");
-								System.out.println("    " + uB.getUnit().toString());
-							}
-							for (ValueBox vB : u.getUseBoxes()) {
-								System.out.println("  *use box:  ");
-								System.out.println("    " + vB.getValue().toString());
-							}
-							System.out.print("\n");
-						}
+						System.out.println("JTP " + b.getMethod().getSignature());
 					}
 				}));
 

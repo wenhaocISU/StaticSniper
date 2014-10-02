@@ -20,7 +20,7 @@ public class StaticMethod implements Serializable {
 	private ArrayList<String> inCallSourceSigs;
 	private ArrayList<String> outCallTargetSigs;
 	private ArrayList<String> fieldRefSigs;
-	private boolean isAbstract, isNative, hasBody;
+	private boolean isDeclaredHere, isAbstract, isNative, hasBody;
 	private int modifiers;
 
 	public StaticMethod(String fullJimpleSig) {
@@ -36,6 +36,7 @@ public class StaticMethod implements Serializable {
 		this.inCallSourceSigs = new ArrayList<String>();
 		this.outCallTargetSigs = new ArrayList<String>();
 		this.fieldRefSigs = new ArrayList<String>();
+		this.isDeclaredHere = false;
 		this.isAbstract = false;
 		this.isNative = false;
 		this.hasBody = false;
@@ -137,6 +138,10 @@ public class StaticMethod implements Serializable {
 		return hasBody;
 	}
 
+	public boolean isDeclaredHere() {
+		return this.isDeclaredHere;
+	}
+	
 	///////// add attributes
 	
 	public void addStmt(StaticStmt s) {
@@ -203,7 +208,9 @@ public class StaticMethod implements Serializable {
 		this.hasBody = flag;
 	}
 
-
+	public void setIsDeclaredHere(boolean flag) {
+		this.isDeclaredHere = flag;
+	}
 
 
 
