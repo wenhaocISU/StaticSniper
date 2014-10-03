@@ -7,22 +7,25 @@ public class StaticStmt implements Serializable {
 
 	private String jimpleStmt;
 	private String familyMethodSig;
+	
 	private boolean containsMethodCall;
 	private boolean containsFieldRef;
-	private boolean containsBreakpointStmt;
-	private boolean containsAssignStmt;
-	private boolean containsIdentityStmt;
-	private boolean containsEnterMonitorStmt;
-	private boolean containsExitMonitorStmt;
-	private boolean containsGotoStmt;
-	private boolean containsIfStmt;
-	private boolean containsLookupSwitchStmt;
-	private boolean containsNopStmt;
-	private boolean containsRetStmt;
-	private boolean containsReturnStmt;
-	private boolean containsReturnVoidStmt;
-	private boolean containsTableSwitchStmt;
-	private boolean containsThrowStmt;
+	
+	private boolean isInvokeStmt;
+	private boolean isBreakpointStmt;
+	private boolean isAssignStmt;
+	private boolean isIdentityStmt;
+	private boolean isEnterMonitorStmt;
+	private boolean isExitMonitorStmt;
+	private boolean isGotoStmt;
+	private boolean isIfStmt;
+	private boolean isLookupSwitchStmt;
+	private boolean isNopStmt;
+	private boolean isRetStmt;
+	private boolean isReturnStmt;
+	private boolean isReturnVoidStmt;
+	private boolean isTableSwitchStmt;
+	private boolean isThrowStmt;
 	private String targetSignature;
 
 	public StaticStmt(String stmt) {
@@ -57,60 +60,64 @@ public class StaticStmt implements Serializable {
 		return targetSignature;
 	}
 	
-	public boolean containsLookupSwitchStmt() {
-		return containsLookupSwitchStmt;
+	public boolean isLookupSwitchStmt() {
+		return isLookupSwitchStmt;
 	}
 	
-	public boolean containsIfStmt() {
-		return containsIfStmt;
+	public boolean isIfStmt() {
+		return isIfStmt;
 	}
 	
-	public boolean containsGotoStmt() {
-		return containsGotoStmt;
+	public boolean isGotoStmt() {
+		return isGotoStmt;
 	}
 	
-	public boolean containsExitMonitorStmt() {
-		return containsExitMonitorStmt;
+	public boolean isExitMonitorStmt() {
+		return isExitMonitorStmt;
 	}
 	
-	public boolean containsBreakpointStmt() {
-		return containsBreakpointStmt;
+	public boolean isBreakpointStmt() {
+		return isBreakpointStmt;
 	}
 	
-	public boolean containsAssignStmt() {
-		return containsAssignStmt;
+	public boolean isAssignStmt() {
+		return isAssignStmt;
 	}
 	
-	public boolean containsIdentityStmt() {
-		return containsIdentityStmt;
+	public boolean isIdentityStmt() {
+		return isIdentityStmt;
 	}
 	
-	public boolean containsEnterMonitorStmt() {
-		return containsEnterMonitorStmt;
+	public boolean isEnterMonitorStmt() {
+		return isEnterMonitorStmt;
 	}
 	
-	public boolean containsThrowStmt() {
-		return containsThrowStmt;
+	public boolean isThrowStmt() {
+		return isThrowStmt;
 	}
 	
-	public boolean containsTableSwitchStmt() {
-		return containsTableSwitchStmt;
+	public boolean isTableSwitchStmt() {
+		return isTableSwitchStmt;
 	}
 	
-	public boolean containsReturnVoidStmt() {
-		return containsReturnVoidStmt;
+	public boolean isReturnVoidStmt() {
+		return isReturnVoidStmt;
 	}
 	
-	public boolean containsReturnStmt() {
-		return containsReturnStmt;
+	public boolean isReturnStmt() {
+		return isReturnStmt;
 	}
 	
-	public boolean containsNopStmt() {
-		return containsNopStmt;
+	public boolean isNopStmt() {
+		return isNopStmt;
 	}
 	
-	public boolean containsRetStmt() {
-		return containsRetStmt;
+	public boolean isRetStmt() {
+		return isRetStmt;
+	}
+
+	public boolean isInvokeStmt() {
+		return isInvokeStmt;
 	}
 	
 	//////// add/set attributes
@@ -122,69 +129,73 @@ public class StaticStmt implements Serializable {
 	public void setTargetSignature(String targetSig) {
 		this.targetSignature = targetSig;
 	}
-
-	public void setContainsFieldRef(boolean flag) {
-		this.containsFieldRef = flag;
-	}
 	
 	public void setContainsMethodCall(boolean flag) {
 		this.containsMethodCall = flag;
 	}
-
-	public void setContainsBreakpointStmt(boolean containsBreakpointStmt) {
-		this.containsBreakpointStmt = containsBreakpointStmt;
+	
+	public void setContainsFieldRef(boolean flag) {
+		this.containsFieldRef = flag;
 	}
 
-	public void setContainsAssignStmt(boolean containsAssignStmt) {
-		this.containsAssignStmt = containsAssignStmt;
+	public void setIsBreakpointStmt(boolean isBreakpointStmt) {
+		this.isBreakpointStmt = isBreakpointStmt;
 	}
 
-	public void setContainsIdentityStmt(boolean containsIdentityStmt) {
-		this.containsIdentityStmt = containsIdentityStmt;
+	public void setIsAssignStmt(boolean isAssignStmt) {
+		this.isAssignStmt = isAssignStmt;
 	}
 
-	public void setContainsEnterMonitorStmt(boolean containsEnterMonitorStmt) {
-		this.containsEnterMonitorStmt = containsEnterMonitorStmt;
+	public void setIsIdentityStmt(boolean isIdentityStmt) {
+		this.isIdentityStmt = isIdentityStmt;
 	}
 
-	public void setContainsExitMonitorStmt(boolean containsExitMonitorStmt) {
-		this.containsExitMonitorStmt = containsExitMonitorStmt;
+	public void setIsEnterMonitorStmt(boolean isEnterMonitorStmt) {
+		this.isEnterMonitorStmt = isEnterMonitorStmt;
 	}
 
-	public void setContainsGotoStmt(boolean containsGotoStmt) {
-		this.containsGotoStmt = containsGotoStmt;
+	public void setIsExitMonitorStmt(boolean isExitMonitorStmt) {
+		this.isExitMonitorStmt = isExitMonitorStmt;
 	}
 
-	public void setContainsIfStmt(boolean containsIfStmt) {
-		this.containsIfStmt = containsIfStmt;
+	public void setIsGotoStmt(boolean isGotoStmt) {
+		this.isGotoStmt = isGotoStmt;
 	}
 
-	public void setContainsLookupSwitchStmt(boolean containsLookupSwitchStmt) {
-		this.containsLookupSwitchStmt = containsLookupSwitchStmt;
+	public void setIsIfStmt(boolean isIfStmt) {
+		this.isIfStmt = isIfStmt;
 	}
 
-	public void setContainsRetStmt(boolean containsRetStmt) {
-		this.containsRetStmt = containsRetStmt;
+	public void setIsLookupSwitchStmt(boolean isLookupSwitchStmt) {
+		this.isLookupSwitchStmt = isLookupSwitchStmt;
 	}
 
-	public void setContainsNopStmt(boolean containsNopStmt) {
-		this.containsNopStmt = containsNopStmt;
+	public void setIsRetStmt(boolean isRetStmt) {
+		this.isRetStmt = isRetStmt;
 	}
 
-	public void setContainsReturnStmt(boolean containsReturnStmt) {
-		this.containsReturnStmt = containsReturnStmt;
+	public void setIsNopStmt(boolean isNopStmt) {
+		this.isNopStmt = isNopStmt;
 	}
 
-	public void setContainsReturnVoidStmt(boolean containsReturnVoidStmt) {
-		this.containsReturnVoidStmt = containsReturnVoidStmt;
+	public void setIsReturnStmt(boolean isReturnStmt) {
+		this.isReturnStmt = isReturnStmt;
 	}
 
-	public void setContainsTableSwitchStmt(boolean containsTableSwitchStmt) {
-		this.containsTableSwitchStmt = containsTableSwitchStmt;
+	public void setIsReturnVoidStmt(boolean isReturnVoidStmt) {
+		this.isReturnVoidStmt = isReturnVoidStmt;
 	}
 
-	public void setContainsThrowStmt(boolean containsThrowStmt) {
-		this.containsThrowStmt = containsThrowStmt;
+	public void setIsTableSwitchStmt(boolean isTableSwitchStmt) {
+		this.isTableSwitchStmt = isTableSwitchStmt;
+	}
+
+	public void setIsThrowStmt(boolean isThrowStmt) {
+		this.isThrowStmt = isThrowStmt;
+	}
+
+	public void setIsInvokeStmt(boolean isInvokeStmt) {
+		this.isInvokeStmt = isInvokeStmt;
 	}
 	
 }

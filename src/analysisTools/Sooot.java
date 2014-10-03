@@ -30,7 +30,6 @@ public class Sooot {
 	
 	private static StaticApp testApp;
 
-	
 	public static void generateAppData(StaticApp staticApp) {
 		
 		testApp = staticApp;
@@ -85,22 +84,68 @@ public class Sooot {
 				StaticClass c = m.getDeclaringClass(testApp);
 				m.setHasBody(true);
 				m.setJimpleCode(b.toString());
-				Map<Unit, StaticStmt> theMap = new HashMap<Unit, StaticStmt>();
-				System.out.println("-M- " + m.getFullJimpleSignature());
+				for (Local l : b.getLocals()) {
+					m.addLocalVariable(l.getName(), l.getType().toString());
+				}
+				for (Local l : b.getParameterLocals()) {
+					m.addParamVariable(l.getName(), l.getType().toString());
+				}
 				for (Unit u : b.getUnits()) {
 					final StaticStmt s = new StaticStmt(u.toString());
 					Stmt stmt = (Stmt) u;
-					s.setContainsMethodCall(false);
-					theMap.put(u, s);
 					u.apply(new JimpleStmtSolver(s));
-					for (Local l : b.getLocals()) {
-						System.out.println(" -L- " + l.getName());
-						for (ValueBox v: l.getUseBoxes()) {
-							System.out.println("  *valuebox type: " + v.getValue().getType().toString());
+					if (stmt.containsFieldRef()) {
+						s.setContainsFieldRef(true);
+						s.setTargetSignature(stmt.getFieldRef().getField().getSignature());
+						SootField refTargetF = stmt.getFieldRef().getField();
+						SootClass refTargetC = refTargetF.getDeclaringClass();
+						String stmtTargetSig = s.getTargetSignature();
+						String stmtTargetC = stmtTargetSig.substring(1, stmtTargetSig.indexOf(": "));
+						String stmtTargetSubsig = stmtTargetSig.substring(stmtTargetSig.indexOf(": ")+2,
+													stmtTargetSig.length()-1);
+						if (refTargetC.isApplicationClass()
+							&& refTargetF.getSubSignature().equals(stmtTargetSubsig)) {
+							if (refTargetC.getName().equals(stmtTargetC)) {
+								StaticField tgtF = testApp.findFieldByFullSignature(stmtTargetSig);
+								tgtF.addInCallSource(m.getFullJimpleSignature());
+								m.addFieldRef(tgtF.getFullJimpleSignature());
+							} else {
+								StaticField tgtF = new StaticField(stmtTargetSig);
+								tgtF.setDeclaringClass(refTargetC.getName());
+								tgtF.addInCallSource(m.getFullJimpleSignature());
+								m.addFieldRef(tgtF.getFullJimpleSignature());
+								StaticClass tgtC = testApp.findClassByName(stmtTargetC);
+								tgtC.addField(tgtF);
+							}
 						}
 					}
+					else if (s.containsMethodCall()) {
+						s.setContainsMethodCall(true);
+						s.setTargetSignature(stmt.getInvokeExpr().getMethod().getSignature());
+						SootMethod refTargetM = stmt.getInvokeExpr().getMethod();
+						SootClass refTargetC = refTargetM.getDeclaringClass();
+						String stmtTargetSig = s.getTargetSignature();
+						String stmtTargetC = stmtTargetSig.substring(1, stmtTargetSig.indexOf(": "));
+						String stmtTargetSubsig = stmtTargetSig.substring(stmtTargetSig.indexOf(": ")+2,
+													stmtTargetSig.length()-1);
+						if (refTargetC.isApplicationClass() &&
+							refTargetM.getSubSignature().equals(stmtTargetSubsig)) {
+							if (refTargetC.getName().equals(stmtTargetC)) {
+								StaticMethod tgtM = testApp.findMethodByFullSignature(stmtTargetSig);
+								tgtM.addInCallSource(m.getFullJimpleSignature());
+								m.addOutCallTarget(tgtM.getFullJimpleSignature());
+							} else {
+								StaticMethod tgtM = new StaticMethod(stmtTargetSig);
+								tgtM.setDeclaringClass(refTargetC.getName());
+								tgtM.addInCallSource(m.getFullJimpleSignature());
+								m.addOutCallTarget(tgtM.getFullJimpleSignature());
+								StaticClass tgtC = testApp.findClassByName(stmtTargetC);
+								tgtC.addMethod(tgtM);
+							}
+						}
+					}
+					m.addStmt(s);
 				}
-				
 			}
 		}));
 

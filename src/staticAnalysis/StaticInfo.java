@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import analysisTools.ApkTool;
-import analysisTools.Soot;
+import analysisTools.Sooot;
 
 public class StaticInfo {
 
@@ -30,6 +30,7 @@ public class StaticInfo {
 	public static StaticApp initAnalysis(StaticApp testApp, boolean forceAll) {
 
 		staticApp = testApp;
+		
 		errorLog = new File(staticApp.outPath + "/static.log");
 		File manifestFile = new File(staticApp.outPath
 				+ "/apktool/AndroidManifest.xml");
@@ -39,19 +40,21 @@ public class StaticInfo {
 		if (!manifestFile.exists() || !resFolder.exists()
 				|| !staticInfoFile.exists() || forceAll) {
 			ApkTool.extractAPK(staticApp);
-			Soot.generateAppData(staticApp);
+			
+			Sooot.generateAppData(staticApp);
 			parseManifest();
 			parseSmali();
 			parseXMLs();
 			processJimpleCode();
 			
 			saveStaticInfo();
+			printErrorLog();
 			
 		} else {
 			staticApp = loadStaticInfo(staticInfoFile);
 		}
-		printErrorLog();
-		return testApp;
+		
+		return staticApp;
 	}
 
 	private static void processJimpleCode() {
@@ -80,7 +83,10 @@ public class StaticInfo {
 
 	private static void saveStaticInfo() {
 		try {
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(staticApp.outPath + "/static.info"));
+			File outFile = new File(staticApp.outPath + "/static.info");
+			if (outFile.exists())
+				outFile.delete();
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outFile));
 			out.writeObject(staticApp);
 			out.close();
 		} catch (Exception e) {

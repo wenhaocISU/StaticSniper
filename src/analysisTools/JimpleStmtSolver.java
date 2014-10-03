@@ -29,77 +29,77 @@ class JimpleStmtSolver extends AbstractStmtSwitch{
     
     public void caseBreakpointStmt(BreakpointStmt stmt)
     {
-       s.setContainsBreakpointStmt(true);
+       s.setIsBreakpointStmt(true);
     }
 
     public void caseInvokeStmt(InvokeStmt stmt)
     {
-        s.setContainsMethodCall(true);
+        s.setIsInvokeStmt(true);
     }
 
     public void caseAssignStmt(AssignStmt stmt)
     {
-        s.setContainsAssignStmt(true);
+        s.setIsAssignStmt(true);
     }
 
     public void caseIdentityStmt(IdentityStmt stmt)
     {
-        s.setContainsIdentityStmt(true);
+        s.setIsIdentityStmt(true);
     }
 
     public void caseEnterMonitorStmt(EnterMonitorStmt stmt)
     {
-        s.setContainsEnterMonitorStmt(true);
+        s.setIsEnterMonitorStmt(true);
     }
 
     public void caseExitMonitorStmt(ExitMonitorStmt stmt)
     {
-        s.setContainsExitMonitorStmt(true);
+        s.setIsExitMonitorStmt(true);
     }
 
     public void caseGotoStmt(GotoStmt stmt)
     {
-        s.setContainsGotoStmt(true);
+        s.setIsGotoStmt(true);
     }
 
     public void caseIfStmt(IfStmt stmt)
     {
-    	s.setContainsIfStmt(true);
+    	s.setIsIfStmt(true);
     }
 
     public void caseLookupSwitchStmt(LookupSwitchStmt stmt)
     {
-        s.setContainsLookupSwitchStmt(true);
+        s.setIsLookupSwitchStmt(true);
     }
 
     public void caseNopStmt(NopStmt stmt)
     {
-        s.setContainsNopStmt(true);
+        s.setIsNopStmt(true);
     }
 
     public void caseRetStmt(RetStmt stmt)
     {
-        s.setContainsRetStmt(true);
+        s.setIsRetStmt(true);
     }
 
     public void caseReturnStmt(ReturnStmt stmt)
     {
-        s.setContainsReturnStmt(true);
+        s.setIsReturnStmt(true);
     }
 
     public void caseReturnVoidStmt(ReturnVoidStmt stmt)
     {
-        s.setContainsReturnVoidStmt(true);
+        s.setIsReturnVoidStmt(true);
     }
 
     public void caseTableSwitchStmt(TableSwitchStmt stmt)
     {
-        s.setContainsTableSwitchStmt(true);
+        s.setIsTableSwitchStmt(true);
     }
 
     public void caseThrowStmt(ThrowStmt stmt)
     {
-        s.setContainsThrowStmt(true);
+        s.setIsThrowStmt(true);
     }
 
     public void defaultCase(Object obj)
