@@ -60,22 +60,36 @@ class JimpleStmtSolver extends AbstractStmtSwitch{
      * 1. localizing 'this'
      * 2. localizing parameters
      * 3. r1 = @caughtexception
+     * Format: leftOp := @1/2/3: type
+     * e.g.: $r0 := @this: myjava.awt.datatransfer.DataFlavor
      * */
     public void caseIdentityStmt(IdentityStmt stmt)
     {
         s.setIsIdentityStmt(true);
     }
 
+    /**
+     * these 2 actually exist
+     * */
     public void caseEnterMonitorStmt(EnterMonitorStmt stmt)
     {
         s.setIsEnterMonitorStmt(true);
     }
-
     public void caseExitMonitorStmt(ExitMonitorStmt stmt)
     {
         s.setIsExitMonitorStmt(true);
     }
 
+    /**
+     * In the output jimple file, labels were added
+     * but the labels are not included in stmt.
+     * e.g., stmt "if $i0==0 goto staticinvoke<a: a>()"
+     * will look like:
+     * "if $i0==0 goto label1"
+     * and the actual code would be:
+     * "label1:
+     * 		staticinvoke<a: a>()"
+     * */
     public void caseGotoStmt(GotoStmt stmt)
     {
         s.setIsGotoStmt(true);

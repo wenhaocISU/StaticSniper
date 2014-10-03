@@ -92,6 +92,7 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			@Override
 			protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+				System.out.println("\n*" + b.getMethod().getSignature());
 				StaticMethod m = testApp.findMethodByFullSignature(b.getMethod().getSignature());
 				m.setHasBody(true);
 				m.setJimpleCode(b.toString());
@@ -104,6 +105,7 @@ public class Soot {
 				for (Unit u : b.getUnits()) {
 					final StaticStmt s = new StaticStmt(u.toString());
 					Stmt stmt = (Stmt) u;
+					s.setFamilyMethod(m.getFullJimpleSignature());
 					u.apply(new JimpleStmtSolver(s));
 					if (stmt.containsFieldRef()) {
 						s.setContainsFieldRef(true);
@@ -161,7 +163,7 @@ public class Soot {
 		}));
 
 		String[] args = {
-		"-d", Paths.appDataDir + testApp.getTestApp() + "/soot/Jimples",
+		"-d", testApp.outPath + "/soot/Jimples",
 		"-f", "J",
 		"-src-prec", "apk",
 		"-ire", "-allow-phantom-refs", "-w",
@@ -215,9 +217,10 @@ public class Soot {
 
 	public static int returnCounter = 1;
 
-	public static void InstrumentEveryMethod(File file) throws Exception {
+	public static void InstrumentEveryMethod(StaticApp staticApp) throws Exception {
 
-		File instrumentLog = new File(Paths.appDataDir + file.getName() + "/soot/Instrumentation/methodLevelLog.csv");
+		testApp = staticApp;
+		File instrumentLog = new File(testApp.outPath + "/soot/Instrumentation/methodLevelLog.csv");
 		instrumentLog.getParentFile().mkdirs();
 		final PrintWriter out = new PrintWriter(new FileWriter(instrumentLog));
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
@@ -275,22 +278,19 @@ public class Soot {
 			}
 		}));
 
-		String[] args = {};
-		List<String> argsList = new ArrayList<String>(Arrays.asList(args));
-		argsList.addAll(Arrays.asList(new String[] { "-d",
-				Paths.appDataDir + file.getName() + "/soot/Instrumentation",
-				"-f", "dex", "-src-prec", "apk", "-ire", "-allow-phantom-refs",
-				"-w", "-force-android-jar", Paths.androidJarPath,
-				"-process-path", file.getAbsolutePath() }));
-		args = argsList.toArray(new String[0]);
-		File outFile = new File(Paths.appDataDir + file.getName()
-				+ "/soot/Instrumentation/" + file.getName());
+		File outFile = new File(testApp.outPath + "/soot/Instrumentation/" + testApp.getTestApp().getName());
 		if (outFile.exists())
 			outFile.delete();
+		String[] args = {
+				"-d", testApp.outPath + "/soot/Instrumentation",
+				"-f", "dex",
+				"-src-prec", "apk",
+				"-ire", "-allow-phantom-refs", "-w",
+				"-force-android-jar", Paths.androidJarPath,
+				"-process-path", testApp.getTestApp().getAbsolutePath() };
 		Scene.v().addBasicClass("java.io.PrintStream", SootClass.SIGNATURES);
 		Scene.v().addBasicClass("java.lang.System", SootClass.SIGNATURES);
 		soot.Main.main(args);
-		soot.G.reset();
 		out.close();
 	}
 	
