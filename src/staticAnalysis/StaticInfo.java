@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import analysisTools.ApkTool;
-import analysisTools.Sooot;
+import analysisTools.Soot;
 
 public class StaticInfo {
 
@@ -41,7 +41,7 @@ public class StaticInfo {
 				|| !staticInfoFile.exists() || forceAll) {
 			ApkTool.extractAPK(staticApp);
 			
-			Sooot.generateAppData(staticApp);
+			Soot.generateAppData(staticApp);
 			parseManifest();
 			parseSmali();
 			parseXMLs();

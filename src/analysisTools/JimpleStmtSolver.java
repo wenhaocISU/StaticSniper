@@ -26,22 +26,41 @@ class JimpleStmtSolver extends AbstractStmtSwitch{
     public JimpleStmtSolver(StaticStmt s) {
     	this.s = s;
     }
-    
+    /**
+
+     * it would never appear in jimple
+     */
     public void caseBreakpointStmt(BreakpointStmt stmt)
     {
        s.setIsBreakpointStmt(true);
     }
 
+    /**
+     * There are 3 types of invoke stmt:
+     * 1. staticinvoke: invoking static methods
+     * 2. virtualinvoke: invoking non-static methods base on class of the object
+     * 3. specialinvoke: invoking init, private methods, and inherited methods
+     * */
     public void caseInvokeStmt(InvokeStmt stmt)
     {
         s.setIsInvokeStmt(true);
     }
 
+    /**
+     * Some facts:
+     *  invokeStmt can only be rightOp;
+     *  fieldRef can be leftOp or RightOp.
+     * */
     public void caseAssignStmt(AssignStmt stmt)
     {
         s.setIsAssignStmt(true);
     }
-
+    /**
+     * There are only 3 known types of identity stmt:
+     * 1. localizing 'this'
+     * 2. localizing parameters
+     * 3. r1 = @caughtexception
+     * */
     public void caseIdentityStmt(IdentityStmt stmt)
     {
         s.setIsIdentityStmt(true);

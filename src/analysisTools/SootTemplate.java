@@ -9,10 +9,6 @@ import soot.BodyTransformer;
 import soot.PackManager;
 import soot.SceneTransformer;
 import soot.Transform;
-import soot.Unit;
-import soot.UnitBox;
-import soot.ValueBox;
-import soot.jimple.toolkits.callgraph.CHATransformer;
 
 public class SootTemplate {
 
