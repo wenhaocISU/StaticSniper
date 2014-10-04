@@ -1,10 +1,11 @@
 package analysisTools;
 
 import soot.jimple.AbstractStmtSwitch;
-import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
+
+import soot.jimple.AssignStmt;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
@@ -83,9 +84,9 @@ class JimpleStmtSolver extends AbstractStmtSwitch{
     /**
      * In the output jimple file, labels were added
      * but the labels are not included in stmt.
-     * e.g., stmt "if $i0==0 goto staticinvoke<a: a>()"
+     * e.g., stmt "goto staticinvoke<a: a>()"
      * will look like:
-     * "if $i0==0 goto label1"
+     * "goto label1"
      * and the actual code would be:
      * "label1:
      * 		staticinvoke<a: a>()"

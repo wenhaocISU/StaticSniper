@@ -107,6 +107,9 @@ public class Soot {
 					Stmt stmt = (Stmt) u;
 					s.setFamilyMethod(m.getFullJimpleSignature());
 					u.apply(new JimpleStmtSolver(s));
+					if (s.isGotoStmt() && s.isIfStmt()) {
+						System.out.println("LEEROY");
+					}
 					if (stmt.containsFieldRef()) {
 						s.setContainsFieldRef(true);
 						s.setTargetSignature(stmt.getFieldRef().getField().getSignature());
@@ -163,13 +166,15 @@ public class Soot {
 		}));
 
 		String[] args = {
-		"-d", testApp.outPath + "/soot/Jimples",
-		"-f", "J",
-		"-src-prec", "apk",
-		"-ire", "-allow-phantom-refs", "-w",
-		"-force-android-jar", Paths.androidJarPath,
-		"-process-path", testApp.getTestApp().getAbsolutePath() };
+			"-d", testApp.outPath + "/soot/Jimples",
+			"-f", "J",
+			"-src-prec", "apk",
+			"-ire", "-allow-phantom-refs", "-w",
+			"-force-android-jar", Paths.androidJarPath,
+			"-process-path", testApp.getTestApp().getAbsolutePath(),
+		};
 		soot.Main.main(args);
+		soot.G.reset();
 	}
 
 	private static StaticClass extractClassInfo(SootClass sootC, StaticClass c) {
@@ -291,6 +296,7 @@ public class Soot {
 		Scene.v().addBasicClass("java.io.PrintStream", SootClass.SIGNATURES);
 		Scene.v().addBasicClass("java.lang.System", SootClass.SIGNATURES);
 		soot.Main.main(args);
+		soot.G.reset();
 		out.close();
 	}
 	
