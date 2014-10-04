@@ -11,10 +11,11 @@ public class StaticMethod implements Serializable {
 
 	private String declaringClassName;
 	private String jimpleSignature, bytecodeSignature;
-	private ArrayList<String> parameterTypes;
-	private Map<String, String> localVariables, paramVariables;
-	private String jimpleCode;
-	private List<StaticStmt> statements;
+	private ArrayList<String> jimpleParameterTypes;
+	private Map<String, String> jimpleLocalVariables, jimpleParamVariables;
+	private String jimpleCode, smaliCode;
+	private List<StaticJimpleStmt> jimpleStatements;
+	private List<StaticSmaliStmt> smaliStatements;
 	private ArrayList<Integer> sourceLineNumbers;
 	private int returnLineNumber;
 	private ArrayList<String> inCallSourceSigs;
@@ -26,11 +27,11 @@ public class StaticMethod implements Serializable {
 	public StaticMethod(String fullJimpleSig) {
 		this.jimpleSignature = fullJimpleSig;
 		this.bytecodeSignature = "";
-		this.parameterTypes = new ArrayList<String>();
-		this.localVariables = new HashMap<String, String>();
-		this.paramVariables = new HashMap<String, String>();
+		this.jimpleParameterTypes = new ArrayList<String>();
+		this.jimpleLocalVariables = new HashMap<String, String>();
+		this.jimpleParamVariables = new HashMap<String, String>();
 		this.jimpleCode = "";
-		this.statements = new ArrayList<StaticStmt>();
+		this.jimpleStatements = new ArrayList<StaticJimpleStmt>();
 		this.sourceLineNumbers = new ArrayList<Integer>();
 		this.returnLineNumber = -1;
 		this.inCallSourceSigs = new ArrayList<String>();
@@ -59,15 +60,15 @@ public class StaticMethod implements Serializable {
 	}
 
 	public ArrayList<String> getParameterTypes() {
-		return parameterTypes;
+		return jimpleParameterTypes;
 	}
 
 	public Map<String, String> getLocalVariables() {
-		return localVariables;
+		return jimpleLocalVariables;
 	}
 
 	public Map<String, String> getParamVariables() {
-		return paramVariables;
+		return jimpleParamVariables;
 	}
 
 	public String getDeclaringClassName() {
@@ -82,8 +83,8 @@ public class StaticMethod implements Serializable {
 		return jimpleCode;
 	}
 
-	public List<StaticStmt> getStatements() {
-		return statements;
+	public List<StaticJimpleStmt> getStatements() {
+		return jimpleStatements;
 	}
 
 	public String getName() {
@@ -144,8 +145,8 @@ public class StaticMethod implements Serializable {
 	
 	///////// add attributes
 	
-	public void addStmt(StaticStmt s) {
-		statements.add(s);
+	public void addStmt(StaticJimpleStmt s) {
+		jimpleStatements.add(s);
 	}
 	
 	public void addOutCallTarget(String targetSig) {
@@ -165,15 +166,15 @@ public class StaticMethod implements Serializable {
 	}
 	
 	public void addParameterType(String pT) {
-		this.parameterTypes.add(pT);
+		this.jimpleParameterTypes.add(pT);
 	}
 	
 	public void addLocalVariable(String name, String type) {
-		this.localVariables.put(name, type);
+		this.jimpleLocalVariables.put(name, type);
 	}
 	
 	public void addParamVariable(String name, String type) {
-		this.paramVariables.put(name, type);
+		this.jimpleParamVariables.put(name, type);
 	}
 	
 	public void setModifiers(int modifiers) {

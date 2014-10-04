@@ -1,4 +1,4 @@
-package staticAnalysis;
+package analysisTools;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -34,7 +34,7 @@ import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import staticFamily.StaticField;
 import staticFamily.StaticMethod;
-import staticFamily.StaticStmt;
+import staticFamily.StaticJimpleStmt;
 
 
 
@@ -103,7 +103,7 @@ public class Soot {
 					m.addParamVariable(l.getName(), l.getType().toString());
 				}
 				for (Unit u : b.getUnits()) {
-					final StaticStmt s = new StaticStmt(u.toString());
+					final StaticJimpleStmt s = new StaticJimpleStmt(u.toString());
 					Stmt stmt = (Stmt) u;
 					s.setFamilyMethod(m.getFullJimpleSignature());
 					u.apply(new JimpleStmtSolver(s));

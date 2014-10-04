@@ -17,25 +17,27 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import staticFamily.StaticStmt;
+import staticFamily.StaticJimpleStmt;
 
 
 class JimpleStmtSolver extends AbstractStmtSwitch{
     Object result;
-    StaticStmt s;
+    StaticJimpleStmt s;
 
-    public JimpleStmtSolver(StaticStmt s) {
+    public JimpleStmtSolver(StaticJimpleStmt s) {
     	this.s = s;
     }
+    
+    
     /**
-
-     * it would never appear in jimple
+     * this would never appear in jimple
      */
     public void caseBreakpointStmt(BreakpointStmt stmt)
     {
        s.setIsBreakpointStmt(true);
     }
 
+    
     /**
      * There are 3 types of invoke stmt:
      * 1. staticinvoke: invoking static methods

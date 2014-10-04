@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import analysisTools.ApkTool;
+import analysisTools.ParseSmali;
 import analysisTools.Soot;
 
 public class StaticInfo {

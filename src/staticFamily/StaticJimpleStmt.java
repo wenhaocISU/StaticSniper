@@ -3,7 +3,7 @@ package staticFamily;
 import java.io.Serializable;
 
 @SuppressWarnings("serial")
-public class StaticStmt implements Serializable {
+public class StaticJimpleStmt implements Serializable {
 
 	private String jimpleStmt;
 	private String familyMethodSig;
@@ -28,7 +28,7 @@ public class StaticStmt implements Serializable {
 	private boolean isThrowStmt;
 	private String targetSignature;
 
-	public StaticStmt(String stmt) {
+	public StaticJimpleStmt(String stmt) {
 		this.jimpleStmt = stmt;
 		this.containsMethodCall = false;
 		this.containsFieldRef = false;
