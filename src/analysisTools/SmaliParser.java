@@ -8,7 +8,7 @@ import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import staticFamily.StaticMethod;
 
-public class ParseSmali {
+public class SmaliParser {
 
 	public StaticApp parseLineNumbers(StaticApp testApp) {
 		for (StaticClass c : testApp.getClassList()) {

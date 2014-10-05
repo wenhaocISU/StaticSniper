@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import analysisTools.ApkTool;
-import analysisTools.ParseSmali;
+import analysisTools.SmaliParser;
 import analysisTools.Soot;
 
 public class StaticInfo {
@@ -67,7 +67,7 @@ public class StaticInfo {
 	}
 
 	private static void parseSmali() {
-		new ParseSmali().parseLineNumbers(staticApp);
+		new SmaliParser().parseLineNumbers(staticApp);
 	}
 
 	private static StaticApp loadStaticInfo(File staticInfoFile) {
