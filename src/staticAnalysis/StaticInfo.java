@@ -44,7 +44,7 @@ public class StaticInfo {
 			
 			Soot.generateAppData(staticApp);
 			parseManifest();
-			parseSmali();
+			SmaliParser.parseAll(staticApp);
 			parseXMLs();
 			processJimpleCode();
 			
@@ -66,9 +66,6 @@ public class StaticInfo {
 
 	}
 
-	private static void parseSmali() {
-		new SmaliParser().parseLineNumbers(staticApp);
-	}
 
 	private static StaticApp loadStaticInfo(File staticInfoFile) {
 		StaticApp result = null;

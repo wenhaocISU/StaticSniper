@@ -4,7 +4,8 @@ public class EventHandlers {
 
 	public static final String[] eventHandlers = {
 	// the name should be in the same format with xml layouts
-	"android:onClick", };
+			"android:onClick",
+	};
 
 	public static final String[] intentSigs = {
 			// must be virtual invoke

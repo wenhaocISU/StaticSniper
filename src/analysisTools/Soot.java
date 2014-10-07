@@ -3,10 +3,7 @@ package analysisTools;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import main.Paths;
@@ -33,8 +30,8 @@ import soot.jimple.StringConstant;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import staticFamily.StaticField;
-import staticFamily.StaticMethod;
 import staticFamily.StaticJimpleStmt;
+import staticFamily.StaticMethod;
 
 
 
@@ -206,7 +203,11 @@ public class Soot {
 	private static StaticField extractFieldInfo(SootField sootF, StaticField f) {
 		f.setDeclaration(sootF.getDeclaration());
 		f.setModifiers(sootF.getModifiers());
-		f.setIsDeclaredHere(true);
+		f.setIsDeclaredHere(sootF.isDeclared());
+		f.setIsPrivate(sootF.isPrivate());
+		f.setIsPublic(sootF.isPublic());
+		f.setIsProtected(sootF.isProtected());
+		f.setIsStatic(sootF.isStatic());
 		return f;
 	}
 	
@@ -214,7 +215,11 @@ public class Soot {
 		m.setBytecodeSignature(sootM.getBytecodeSignature());
 		m.setIsAbstract(sootM.isAbstract());
 		m.setIsNative(sootM.isNative());
-		m.setIsDeclaredHere(true);
+		m.setIsDeclaredHere(sootM.isDeclared());
+		m.setIsPublic(sootM.isPublic());
+		m.setIsPrivate(sootM.isPrivate());
+		m.setIsProtected(sootM.isProtected());
+		m.setIsStatic(sootM.isStatic());
 		for (Type paramType : sootM.getParameterTypes())
 			m.addParameterType(paramType.toString());
 		return m;

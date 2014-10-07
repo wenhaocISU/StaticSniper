@@ -18,6 +18,7 @@ public class StaticClass implements Serializable {
 	private String superClassName;
 	private String outerClassName;
 
+	private boolean isPublic, isPrivate, isProtected;
 	private boolean isInnerClass;
 	private boolean isInterface;
 	private boolean isAbstract;
@@ -70,6 +71,18 @@ public class StaticClass implements Serializable {
 			return false;
 	}
 
+	public boolean isPublic() {
+		return isPublic;
+	}
+	
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+	
+	public boolean isProtected() {
+		return isProtected;
+	}
+	
 	public boolean isInDEX() {
 		return isInDEX;
 	}
@@ -259,5 +272,16 @@ public class StaticClass implements Serializable {
 		this.outerClassName = outerClassName;
 	}
 
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	public void setIsPrivate(boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+
+	public void setIsProtected(boolean isProtected) {
+		this.isProtected = isProtected;
+	}
 
 }

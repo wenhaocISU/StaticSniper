@@ -6,11 +6,71 @@ import java.io.FileReader;
 
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
+import staticFamily.StaticField;
 import staticFamily.StaticMethod;
 
 public class SmaliParser {
 
-	public StaticApp parseLineNumbers(StaticApp testApp) {
+	private static StaticApp testApp;
+	
+	@SuppressWarnings("unused")
+	private final String[] smaliComments = {
+			"# interfaces",
+			"# annotations",
+			"# static fields",
+			"# instance fields",
+			"# direct methods",
+			"# virtual methods",
+	};
+	
+	public static void parseAll(StaticApp staticApp) {
+		testApp = staticApp;
+		parseLineNumbers(testApp);
+		for (StaticClass c : testApp.getClassList()) {
+			File classSmali = new File(testApp.outPath + "/apktool/smali/" + 
+						c.getName().replace(".", "/") + ".smali");
+			parseSmaliFile(classSmali, c);
+		}
+	}
+	
+	private static void parseSmaliFile(File classSmali, StaticClass c) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(classSmali));
+			String line;
+			// get to method district
+			while ((line = in.readLine())!=null) {
+				if (line.equals("# direct methods") || line.equals("# virtual methods"))
+					break;
+			}
+			// start reading
+			StaticMethod m = null;
+			boolean insideMethod = false;
+			while ((line = in.readLine())!=null) {
+				if (line.startsWith(".method")) {
+					String bcSubSig = line.substring(line.lastIndexOf(" ") + 1);
+					m = testApp.findMethodByBytecodeSignature("<" + 
+							c.getName() + ": " + bcSubSig + ">");
+					m.setIsConstructor(line.contains(" constructor "));
+					insideMethod = true;
+				}
+				else if (line.startsWith(".end method")) {
+					insideMethod = false;
+					m = null;
+				}
+				else if (insideMethod) {
+					if (line.trim().startsWith(".line ")) {
+						int lastLineNumber = Integer.parseInt(line.trim().split(" ")[1]);
+					}
+					else if (line.trim().startsWith(":")) {
+						
+					}
+				}
+			}
+			in.close();
+		}	catch (Exception e) {e.printStackTrace();}
+	}
+	
+	public static StaticApp parseLineNumbers(StaticApp testApp) {
 		for (StaticClass c : testApp.getClassList()) {
 			File smali = new File(testApp.outPath + "/apktool/smali/"
 					+ c.getName().replace(".", "/") + ".smali");

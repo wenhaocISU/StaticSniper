@@ -12,12 +12,14 @@ public class StaticField implements Serializable {
 	private String declaringClassName;
 	private ArrayList<String> inCallSourceSigs = new ArrayList<String>();
 	private boolean isDeclaredHere;
+	private boolean isStatic, isPublic, isPrivate, isProtected;
 
 	public StaticField(String fullSig) {
 		this.fullJimpleSignature = fullSig;
 		this.modifiers = -1;
 		this.declaration = "";
 		this.isDeclaredHere = false;
+		this.isStatic = false;
 	}
 
 	//////////// read attributes
@@ -26,6 +28,22 @@ public class StaticField implements Serializable {
 		return isDeclaredHere;
 	}
 	
+	public boolean isStatic() {
+		return isStatic;
+	}
+	
+	public boolean isPublic() {
+		return isPublic;
+	}
+	
+	public boolean isProtected() {
+		return isProtected;
+	}
+	
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
 	public String getName() {
 		return getSubJimpleSignature().split(" ")[1];
 	}
@@ -82,6 +100,22 @@ public class StaticField implements Serializable {
 	
 	public void setIsDeclaredHere(boolean flag) {
 		this.isDeclaredHere = flag;
+	}
+
+	public void setIsStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	public void setIsPrivate(boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+
+	public void setIsProtected(boolean isProtected) {
+		this.isProtected = isProtected;
 	}
 
 }

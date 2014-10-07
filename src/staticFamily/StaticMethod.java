@@ -23,6 +23,7 @@ public class StaticMethod implements Serializable {
 	private ArrayList<String> fieldRefSigs;
 	private boolean isDeclaredHere, isAbstract, isNative, hasBody;
 	private int modifiers;
+	private boolean isPublic, isPrivate, isProtected, isStatic, isConstructor;
 
 	public StaticMethod(String fullJimpleSig) {
 		this.jimpleSignature = fullJimpleSig;
@@ -108,7 +109,9 @@ public class StaticMethod implements Serializable {
 	}
 
 	public int getFirstLineNumber() {
-		return sourceLineNumbers.get(0);
+		if (sourceLineNumbers.size() > 0)
+			return sourceLineNumbers.get(0);
+		else return -1;
 	}
 
 	public int getReturnLineNumber() {
@@ -127,6 +130,10 @@ public class StaticMethod implements Serializable {
 		return fieldRefSigs;
 	}
 	
+	public boolean isConstructor() {
+		return isConstructor;
+	}
+	
 	public boolean isAbstract() {
 		return isAbstract;
 	}
@@ -139,6 +146,22 @@ public class StaticMethod implements Serializable {
 		return hasBody;
 	}
 
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public boolean isProtected() {
+		return isProtected;
+	}
+
+	public boolean isStatic() {
+		return isStatic;
+	}
+	
 	public boolean isDeclaredHere() {
 		return this.isDeclaredHere;
 	}
@@ -213,12 +236,25 @@ public class StaticMethod implements Serializable {
 		this.isDeclaredHere = flag;
 	}
 
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
 
+	public void setIsPrivate(boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
 
+	public void setIsProtected(boolean isProtected) {
+		this.isProtected = isProtected;
+	}
 
-
-
-
+	public void setIsStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+	
+	public void setIsConstructor(boolean isConstructor) {
+		this.isConstructor = isConstructor;
+	}
 
 
 }
