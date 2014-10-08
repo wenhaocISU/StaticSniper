@@ -17,10 +17,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import smali.SmaliParser;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import analysisTools.ApkTool;
-import analysisTools.SmaliParser;
 import analysisTools.Soot;
 
 public class StaticInfo {
