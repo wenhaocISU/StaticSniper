@@ -25,7 +25,7 @@ public class SmaliParser {
 	
 	public static void parseAll(StaticApp staticApp) {
 		testApp = staticApp;
-		parseLineNumbers(testApp);
+		parseLineNumbers();
 		for (StaticClass c : testApp.getClassList()) {
 			File classSmali = new File(testApp.outPath + "/apktool/smali/" + 
 						c.getName().replace(".", "/") + ".smali");
@@ -45,6 +45,7 @@ public class SmaliParser {
 			// start reading
 			StaticMethod m = null;
 			boolean insideMethod = false;
+			int lastLineNumber = -1;
 			while ((line = in.readLine())!=null) {
 				if (line.startsWith(".method")) {
 					String bcSubSig = line.substring(line.lastIndexOf(" ") + 1);
@@ -58,9 +59,12 @@ public class SmaliParser {
 					m = null;
 				}
 				else if (insideMethod) {
+					// 1. line numbers
 					if (line.trim().startsWith(".line ")) {
-						int lastLineNumber = Integer.parseInt(line.trim().split(" ")[1]);
+						lastLineNumber = Integer.parseInt(line.trim().split(" ")[1]);
+						m.addSourceLineNumber(lastLineNumber);
 					}
+					// 2. labels
 					else if (line.trim().startsWith(":")) {
 						
 					}
@@ -70,7 +74,7 @@ public class SmaliParser {
 		}	catch (Exception e) {e.printStackTrace();}
 	}
 	
-	public static StaticApp parseLineNumbers(StaticApp testApp) {
+	public static StaticApp parseLineNumbers() {
 		for (StaticClass c : testApp.getClassList()) {
 			File smali = new File(testApp.outPath + "/apktool/smali/"
 					+ c.getName().replace(".", "/") + ".smali");
