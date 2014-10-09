@@ -2,12 +2,21 @@ package smali;
 
 public class BlockLabel {
 
-	private String normalLabel;
+	private String generalLabel;
 	private String gotoLabel;
 	private String condLabel;
 	private String pswitchLabel;
 	private String sswitchLabel;
 	private String tryLabel;
+	
+	public BlockLabel() {
+		this.setGeneralLabel("main");
+		this.setCondLabel("");
+		this.setGotoLabel("");
+		this.setPswitchLabel("");
+		this.setSswitchLabel("");
+		this.setTryLabel("");
+	}
 	
 	public String getGotoLabel() {
 		return gotoLabel;
@@ -50,11 +59,11 @@ public class BlockLabel {
 	}
 
 	public String getNormalLabel() {
-		return normalLabel;
+		return generalLabel;
 	}
 
-	public void setNormalLabel(String normalLabel) {
-		this.normalLabel = normalLabel;
+	public void setGeneralLabel(String normalLabel) {
+		this.generalLabel = normalLabel;
 	}
 	
 }

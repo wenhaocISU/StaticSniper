@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import staticFamily.StaticMethod;
+import staticFamily.StaticSmaliStmt;
 
 public class SmaliParser {
 
@@ -46,9 +47,7 @@ public class SmaliParser {
 			StaticMethod m = null;
 			boolean insideMethod = false;
 			int lastLineNumber = -1;
-			String condLabel = "";
-			String exceptionalLabel = "";
-			String gotoLabel = "";
+			BlockLabel currentBlock = new BlockLabel();
 			while ((line = in.readLine())!=null) {
 				String l = line.trim();
 ///////////////////////////////////////////////////////// first get into a method
@@ -86,16 +85,22 @@ public class SmaliParser {
 							//	0x1389 -> :sswitch_1
 							//	0x138a -> :sswitch_2
 							//  .end sparse-switch
+							String wholeStmt = l;
+							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
 							String ll = "";
 							while (!ll.equals(".end sparse-switch")) {
 								ll = in.readLine();
 								if (ll.contains(" "))
 									ll = ll.trim();
+								wholeStmt += "\n" + ll;
 								if (ll.contains(" -> :")) {
 									String thisValue = ll.split(" -> :")[0];
 									String tgtLabel = ll.split(" -> :")[1];
+									s.addSwitchTarget(thisValue, tgtLabel);
 								}
 							}
+							s.setSmaliStmt(wholeStmt);
+							s.setBranches(true);
 						}
 														// 3.2 :pswitch_data_*
 						else if (l.startsWith(":pswitch_data_")) {
@@ -104,11 +109,14 @@ public class SmaliParser {
 							//  :pswitch_0
 							//  :pswitch_1
 							//  .end packed-switch
+							String wholeStmt = l;
+							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
 							String ll = "";
 							while (!ll.equals(".end packed-switch")) {
 								ll = in.readLine();
 								if (ll.contains(" "))
 									ll = ll.trim();
+								wholeStmt += "\n" + ll;
 								int offset = 0;
 								String initValue = "";
 								if (ll.startsWith(".packed-switch ")) {
