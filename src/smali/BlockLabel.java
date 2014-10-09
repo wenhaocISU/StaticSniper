@@ -2,15 +2,12 @@ package smali;
 
 public class BlockLabel {
 
+	private String normalLabel;
 	private String gotoLabel;
 	private String condLabel;
 	private String pswitchLabel;
 	private String sswitchLabel;
 	private String tryLabel;
-	
-	public BlockLabel() {
-		
-	}
 	
 	public String getGotoLabel() {
 		return gotoLabel;
@@ -50,6 +47,14 @@ public class BlockLabel {
 	
 	public void setTryLabel(String tryLabel) {
 		this.tryLabel = tryLabel;
+	}
+
+	public String getNormalLabel() {
+		return normalLabel;
+	}
+
+	public void setNormalLabel(String normalLabel) {
+		this.normalLabel = normalLabel;
 	}
 	
 }
