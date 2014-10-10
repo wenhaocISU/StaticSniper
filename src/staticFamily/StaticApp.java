@@ -26,7 +26,11 @@ public class StaticApp implements Serializable {
 	// //////////// attribute operation
 
 	public StaticClass getMainActivity() {
-		return activityList.get(0);
+		for (StaticClass c : classList) {
+			if (c.isMainActivity())
+				return c;
+		}
+		return null;
 	}
 
 	public List<StaticClass> getClassList() {
