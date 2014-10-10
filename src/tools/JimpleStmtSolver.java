@@ -1,4 +1,4 @@
-package analysisTools;
+package tools;
 
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.BreakpointStmt;

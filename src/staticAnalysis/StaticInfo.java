@@ -20,8 +20,8 @@ import org.w3c.dom.NodeList;
 import smali.SmaliParser;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
-import analysisTools.ApkTool;
-import analysisTools.Soot;
+import tools.ApkTool;
+import tools.Soot;
 
 public class StaticInfo {
 
