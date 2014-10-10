@@ -1,6 +1,9 @@
 package smali;
 
-public class BlockLabel {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class BlockLabel implements Serializable{
 
 	private String generalLabel;
 	private String gotoLabel;
@@ -8,14 +11,17 @@ public class BlockLabel {
 	private String pswitchLabel;
 	private String sswitchLabel;
 	private String tryLabel;
+	private String catchLabel;
+	private String catchAllLabel;
 	
 	public BlockLabel() {
-		this.setGeneralLabel("main");
+		this.setGeneralLabel("");
 		this.setCondLabel("");
 		this.setGotoLabel("");
 		this.setPswitchLabel("");
 		this.setSswitchLabel("");
 		this.setTryLabel("");
+		this.setCatchLabel("");
 	}
 	
 	public String getGotoLabel() {
@@ -64,6 +70,22 @@ public class BlockLabel {
 
 	public void setGeneralLabel(String normalLabel) {
 		this.generalLabel = normalLabel;
+	}
+
+	public String getCatchLabel() {
+		return catchLabel;
+	}
+
+	public void setCatchLabel(String catchLabel) {
+		this.catchLabel = catchLabel;
+	}
+
+	public String getCatchAllLabel() {
+		return catchAllLabel;
+	}
+
+	public void setCatchAllLabel(String catchAllLabel) {
+		this.catchAllLabel = catchAllLabel;
 	}
 	
 }

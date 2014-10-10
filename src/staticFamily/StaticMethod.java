@@ -14,8 +14,8 @@ public class StaticMethod implements Serializable {
 	private ArrayList<String> jimpleParameterTypes;
 	private Map<String, String> jimpleLocalVariables, jimpleParamVariables;
 	private String jimpleCode, smaliCode;
-	private List<StaticJimpleStmt> jimpleStatements;
-	private List<StaticSmaliStmt> smaliStatements;
+	private ArrayList<StaticJimpleStmt> jimpleStatements;
+	private ArrayList<StaticSmaliStmt> smaliStatements;
 	private ArrayList<Integer> sourceLineNumbers;
 	private int returnLineNumber;
 	private ArrayList<String> inCallSourceSigs;
@@ -32,7 +32,9 @@ public class StaticMethod implements Serializable {
 		this.jimpleLocalVariables = new HashMap<String, String>();
 		this.jimpleParamVariables = new HashMap<String, String>();
 		this.jimpleCode = "";
+		this.smaliCode = "";
 		this.jimpleStatements = new ArrayList<StaticJimpleStmt>();
+		this.smaliStatements = new ArrayList<StaticSmaliStmt>();
 		this.sourceLineNumbers = new ArrayList<Integer>();
 		this.returnLineNumber = -1;
 		this.inCallSourceSigs = new ArrayList<String>();
@@ -46,6 +48,14 @@ public class StaticMethod implements Serializable {
 	}
 
 	///////// get attributes
+	
+	public StaticSmaliStmt getSmaliStmt(int stmtID) {
+		for (StaticSmaliStmt s : smaliStatements)
+			if (s.getStmtID() == stmtID)
+				return s;
+		return null;
+	}
+	
 	public String getFullJimpleSignature() {
 		return jimpleSignature;
 	}
@@ -84,10 +94,18 @@ public class StaticMethod implements Serializable {
 		return jimpleCode;
 	}
 
-	public List<StaticJimpleStmt> getStatements() {
+	public String getSmaliCode() {
+		return smaliCode;
+	}
+	
+	public ArrayList<StaticJimpleStmt> getJimpleStatements() {
 		return jimpleStatements;
 	}
 
+	public ArrayList<StaticSmaliStmt> getSmaliStatements() {
+		return smaliStatements;
+	}
+	
 	public String getName() {
 		if (this.getSubJimpleSignature().split(" ").length > 1)
 			return this.getSubJimpleSignature().split(" ")[1];
@@ -254,6 +272,15 @@ public class StaticMethod implements Serializable {
 	
 	public void setIsConstructor(boolean isConstructor) {
 		this.isConstructor = isConstructor;
+	}
+
+	public void addSmaliStatement(StaticSmaliStmt smaliStatement) {
+		this.smaliStatements.add(smaliStatement);
+	}
+
+
+	public void setSmaliCode(String smaliCode) {
+		this.smaliCode = smaliCode;
 	}
 
 
