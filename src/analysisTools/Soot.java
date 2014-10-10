@@ -89,7 +89,6 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			@Override
 			protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
-				System.out.println("\n*" + b.getMethod().getSignature());
 				StaticMethod m = testApp.findMethodByFullSignature(b.getMethod().getSignature());
 				m.setHasBody(true);
 				m.setJimpleCode(b.toString());
@@ -104,9 +103,6 @@ public class Soot {
 					Stmt stmt = (Stmt) u;
 					s.setFamilyMethod(m.getFullJimpleSignature());
 					u.apply(new JimpleStmtSolver(s));
-					if (s.isGotoStmt() && s.isIfStmt()) {
-						System.out.println("LEEROY");
-					}
 					if (stmt.containsFieldRef()) {
 						s.setContainsFieldRef(true);
 						s.setTargetSignature(stmt.getFieldRef().getField().getSignature());

@@ -34,11 +34,20 @@ public class SmaliParser {
 						c.getName().replace(".", "/") + ".smali");
 			parseLineNumbers(classSmali);
 			parseSmaliFile(classSmali, c);
-			writeInstrumentedSmali(classSmali);
+			File newSmali = new File(testApp.outPath + "/apktool/newSmali/" + 
+						c.getName().replace(".", "/") + ".smali");
+			writeInstrumentedSmali(newSmali);
 		}
+		File original = new File(testApp.outPath + "/apktool/smali/");
+		File instrumented = new File(testApp.outPath + "/apktool/newSmali/");
+		System.out.println("moving original smali files into /apktool/oldSmali/...");
+		original.renameTo(new File(testApp.outPath + "/apktool/oldSmali/"));
+		System.out.println("moving instrumented smali files into /apktool/smali/...");
+		instrumented.renameTo(new File(testApp.outPath + "/apktool/smali/"));
 	}
 	
 	private static void writeInstrumentedSmali(File smaliFile) {
+		smaliFile.getParentFile().mkdirs();
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(smaliFile));
 			out.write(classSmali);
@@ -68,7 +77,7 @@ public class SmaliParser {
 ///////////////////////////////////////////////////////// first get into a method
 				if (line.startsWith(".method")) {
 					classSmali += line + "\n";
-					methodSmali = line;
+					methodSmali = line + "\n";
 					insideMethod = true;
 					String bcSubSig = line.substring(line.lastIndexOf(" ") + 1);
 					m = testApp.findMethodByBytecodeSignature("<" + 
@@ -81,7 +90,7 @@ public class SmaliParser {
 				}
 				else if (line.startsWith(".end method")) {
 					classSmali += line + "\n\n";
-					methodSmali += "\n" + line;
+					methodSmali += line + "\n";
 					m.setSmaliCode(methodSmali);
 					methodSmali = "";
 					insideMethod = false;
@@ -133,6 +142,8 @@ public class SmaliParser {
 						else if (l.startsWith(".annotation")) {
 							while (!l.equals(".end annotation")) {
 								l = in.readLine();
+								classSmali += l + "\n";
+								methodSmali += l + "\n";
 								if (l.contains(" "))
 									l = l.trim();
 							}
@@ -141,7 +152,7 @@ public class SmaliParser {
 					}
 													// 3. labels by colons
 					else if (l.startsWith(":")) {
-						classSmali += "\n" + line;
+						classSmali += line + "\n";
 														// 3.1 special case :sswitch_data_*
 						if (l.startsWith(":sswitch_data_")) {
 							//  :sswitch_data_0
@@ -154,6 +165,8 @@ public class SmaliParser {
 							String ll = "";
 							while (!ll.equals(".end sparse-switch")) {
 								ll = in.readLine();
+								classSmali += ll + "\n";
+								methodSmali += ll + "\n";
 								if (ll.contains(" "))
 									ll = ll.trim();
 								wholeStmt += "\n" + ll;
@@ -183,6 +196,8 @@ public class SmaliParser {
 							String ll = "", initValue = "";
 							while (!ll.equals(".end packed-switch")) {
 								ll = in.readLine();
+								classSmali += ll + "\n";
+								methodSmali += ll + "\n";
 								if (ll.contains(" "))
 									ll = ll.trim();
 								wholeStmt += "\n\t" + ll;
@@ -210,6 +225,8 @@ public class SmaliParser {
 							String wholeStmt = l;
 							while (!l.contains(".end array-data")) {
 								l = in.readLine();
+								classSmali += l + "\n";
+								methodSmali += l + "\n";
 								if (l.contains(" "))
 									l = l.trim();
 								wholeStmt += "\n\t" + l;
@@ -272,6 +289,7 @@ public class SmaliParser {
 							String left = classSmali.substring(0, classSmali.lastIndexOf("\n\n")+2);
 							String right = classSmali.substring(classSmali.lastIndexOf("\n\n")+2);
 							classSmali = left + "    .line " + s.getSourceLineNumber() + "\n" + right;
+							m.addSourceLineNumber(s.getSourceLineNumber());
 						}
 						s.setFlowsThrough(true);
 						if (StmtChecker.isGoto(l)) {

@@ -42,11 +42,15 @@ public class StaticInfo {
 				|| !staticInfoFile.exists() || forceAll) {
 			ApkTool.extractAPK(staticApp);
 			Soot.generateAppData(staticApp);
+			System.out.println("parsing AndroidManifest.xml...");
 			parseManifest();
+			System.out.println("parsing smali code... might take a while...");
 			SmaliParser.parseAll(staticApp);
+			System.out.println("parsing XMLs...");
 			parseXMLs();
+			System.out.println("parsing jimple code...");
 			processJimpleCode();
-			ApkTool.assembleAPK(staticApp);
+			//ApkTool.assembleAPK(staticApp);
 			saveStaticInfo();
 			printErrorLog();
 			
