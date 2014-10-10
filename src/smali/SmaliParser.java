@@ -3,7 +3,8 @@ package smali;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
@@ -13,6 +14,8 @@ import staticFamily.StaticSmaliStmt;
 public class SmaliParser {
 
 	private static StaticApp testApp;
+	private static int largestLineNumber = 0;
+	private static String classSmali = "";
 	
 	@SuppressWarnings("unused")
 	private final String[] smaliComments = {
@@ -26,20 +29,31 @@ public class SmaliParser {
 	
 	public static void parseAll(StaticApp staticApp) {
 		testApp = staticApp;
-		parseLineNumbers();
 		for (StaticClass c : testApp.getClassList()) {
 			File classSmali = new File(testApp.outPath + "/apktool/smali/" + 
 						c.getName().replace(".", "/") + ".smali");
+			parseLineNumbers(classSmali);
 			parseSmaliFile(classSmali, c);
+			writeInstrumentedSmali(classSmali);
 		}
 	}
 	
-	private static void parseSmaliFile(File classSmali, StaticClass c) {
+	private static void writeInstrumentedSmali(File smaliFile) {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(classSmali));
+			PrintWriter out = new PrintWriter(new FileWriter(smaliFile));
+			out.write(classSmali);
+			out.close();
+		}	catch (Exception e) {e.printStackTrace();}
+	}
+
+	private static void parseSmaliFile(File smaliFile, StaticClass c) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(smaliFile));
 			String line;
+			classSmali = "";
 			// get to method district
 			while ((line = in.readLine())!=null) {
+				classSmali += line + "\n";
 				if (line.equals("# direct methods") || line.equals("# virtual methods"))
 					break;
 			}
@@ -51,36 +65,42 @@ public class SmaliParser {
 			BlockLabel label = new BlockLabel();
 			int lastInvokeStmtID = -1;
 			while ((line = in.readLine())!=null) {
-				String l = line.trim();
 ///////////////////////////////////////////////////////// first get into a method
 				if (line.startsWith(".method")) {
+					classSmali += line + "\n";
+					methodSmali = line;
 					insideMethod = true;
 					String bcSubSig = line.substring(line.lastIndexOf(" ") + 1);
 					m = testApp.findMethodByBytecodeSignature("<" + 
 							c.getName() + ": " + bcSubSig + ">");
 					m.setIsConstructor(line.contains(" constructor "));
-					methodSmali = line;
 					label = new BlockLabel();
 					label.setGeneralLabel("main");
 					lastInvokeStmtID = -1;
 					stmtID = 0;
 				}
 				else if (line.startsWith(".end method")) {
+					classSmali += line + "\n\n";
 					methodSmali += "\n" + line;
 					m.setSmaliCode(methodSmali);
 					methodSmali = "";
 					insideMethod = false;
 					m = null;
 				}
-				else if (insideMethod && !line.equals("")) {
+				else if (insideMethod) {
 ////////////////////////////////////////////////////////////////////////////////////////// inside method
-					methodSmali += "\n" + line;
+					methodSmali += line + "\n";
+					String l = line;
+					if (l.contains(" "))
+						l = l.trim();
 													// 1. comments
 					if (l.startsWith("#")) {
+						classSmali += line + "\n";
 						continue;
 					}
 													// 2. sections by dots
 					else if (l.startsWith(".")) {
+						classSmali += line + "\n";
 														// 2.1 .line *
 						if (l.startsWith(".line")) {
 							lastLineNumber = Integer.parseInt(l.split(" ")[1]);
@@ -105,6 +125,8 @@ public class SmaliParser {
 							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
+							s.setSourceLineNumber(lastLineNumber);
+							lastLineNumber = -1;
 							m.addSmaliStatement(s);
 						}
 														// 2.3 .annotation
@@ -119,6 +141,7 @@ public class SmaliParser {
 					}
 													// 3. labels by colons
 					else if (l.startsWith(":")) {
+						classSmali += "\n" + line;
 														// 3.1 special case :sswitch_data_*
 						if (l.startsWith(":sswitch_data_")) {
 							//  :sswitch_data_0
@@ -144,6 +167,8 @@ public class SmaliParser {
 							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
+							s.setSourceLineNumber(lastLineNumber);
+							lastLineNumber = -1;
 							m.addSmaliStatement(s);
 						}
 														// 3.2 special case :pswitch_data_*
@@ -176,6 +201,8 @@ public class SmaliParser {
 							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
+							s.setSourceLineNumber(lastLineNumber);
+							lastLineNumber = -1;
 							m.addSmaliStatement(s);
 						}
 														// 3.3 special case :array
@@ -191,6 +218,8 @@ public class SmaliParser {
 							s.setIsArrayDefStmt(true);
 							s.setStmtID(stmtID);
 							stmtID++;
+							s.setSourceLineNumber(lastLineNumber);
+							lastLineNumber = -1;
 							m.addSmaliStatement(s);
 						}
 														// 3.4 normal cases (just labels)
@@ -226,10 +255,24 @@ public class SmaliParser {
 					}
 													// 4. instructions
 					else {
+						classSmali += line + "\n";
+						if (line.equals(""))
+							continue;
 						StaticSmaliStmt s = new StaticSmaliStmt(l);
 						s.setBlockLabel(label);
 						s.setStmtID(stmtID);
 						stmtID++;
+						s.setSourceLineNumber(lastLineNumber);
+						lastLineNumber = -1;
+						s.setHasRealSourceLineNumber(true);
+						if (s.getSourceLineNumber() == -1) {
+							s.setHasRealSourceLineNumber(false);
+							s.setSourceLineNumber(largestLineNumber+1);
+							largestLineNumber++;
+							String left = classSmali.substring(0, classSmali.lastIndexOf("\n\n")+2);
+							String right = classSmali.substring(classSmali.lastIndexOf("\n\n")+2);
+							classSmali = left + "    .line " + s.getSourceLineNumber() + "\n" + right;
+						}
 						s.setFlowsThrough(true);
 						if (StmtChecker.isGoto(l)) {
 							label = new BlockLabel();
@@ -256,10 +299,18 @@ public class SmaliParser {
 							s.setMoveInvokeResultFromID(is.getStmtID());
 						}
 						else if (StmtChecker.isGetField(l)) {
-							
+							String target = l.substring(l.lastIndexOf(", ")+2);
+							String tgtClass = ClassNameDexToJava(target.split("->")[0]);
+							String tgtFieldName = target.split("->")[1].split(":")[0];
+							s.setFieldTarget(tgtClass + ": " + tgtFieldName);
+							s.setIsGetFieldStmt(true);
 						}
 						else if (StmtChecker.isPutField(l)) {
-							
+							String target = l.substring(l.lastIndexOf(", ")+2);
+							String tgtClass = ClassNameDexToJava(target.split("->")[0]);
+							String tgtFieldName = target.split("->")[1].split(":")[0];
+							s.setFieldTarget(tgtClass + ": " + tgtFieldName);
+							s.setIsPutFieldStmt(true);
 						}
 						m.addSmaliStatement(s);
 					}
@@ -270,47 +321,24 @@ public class SmaliParser {
 		}	catch (Exception e) {e.printStackTrace();}
 	}
 	
-	public static StaticApp parseLineNumbers() {
-		for (StaticClass c : testApp.getClassList()) {
-			File smali = new File(testApp.outPath + "/apktool/smali/"
-					+ c.getName().replace(".", "/") + ".smali");
-			try {
-				BufferedReader in = new BufferedReader(new FileReader(smali));
-				String line;
-				boolean insideMethod = false;
-				StaticMethod m = null;
-				int lastLineNumber = -1;
-				while ((line = in.readLine()) != null) {
-					if (line.startsWith(".method")) {
-						insideMethod = true;
-						String bcSubsig = line
-								.substring(line.lastIndexOf(" ") + 1);
-						m = testApp.findMethodByBytecodeSignature("<"
-								+ c.getName() + ": " + bcSubsig + ">");
-					} else if (line.startsWith(".end method")) {
-						insideMethod = false;
-						m = null;
-						lastLineNumber = -1;
-					} else {
-						if (!insideMethod)
-							continue;
-						if (line.trim().startsWith(".line ")) {
-							int i = Integer.parseInt(line.substring(line
-									.indexOf(".line ") + ".line ".length()));
-							m.addSourceLineNumber(i);
-							lastLineNumber = i;
-						} else if (line.trim().startsWith("return")) {
-							m.setReturnLineNumber(lastLineNumber);
-						}
-					}
-				}
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+	private static void parseLineNumbers(File smaliFile) {
+		largestLineNumber = 0;
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(smaliFile));
+			String line;
+			while ((line = in.readLine()) != null) {
+				if (!line.startsWith("    .line"))
+					continue;
+				int i = Integer.parseInt(line.substring(line
+						.indexOf(".line ") + ".line ".length()));
+				if (i > largestLineNumber)
+					largestLineNumber = i;
 			}
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		return testApp;
 	}
 
 	public static String ClassNameDexToJava(String dexCN) {

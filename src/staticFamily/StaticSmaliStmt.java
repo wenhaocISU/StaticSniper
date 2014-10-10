@@ -11,6 +11,7 @@ public class StaticSmaliStmt implements Serializable{
 
 	private String smaliStmt;
 	private int srcLineNumber;
+	private boolean hasRealSourceLineNumber;
 	private int stmtID;
 	private BlockLabel blockLabel;
 	private boolean flowsThrough, branches, goesTo, returns;
@@ -56,6 +57,7 @@ public class StaticSmaliStmt implements Serializable{
 		this.setMoveInvokeResultFromID(-1);
 		this.setIsMoveResultStmt(false);
 		this.setMoveInvokeResultToID(-1);
+		this.setHasRealSourceLineNumber(false);
 	}
 	
 	public StaticSmaliStmt(String smaliStmt) {
@@ -82,6 +84,7 @@ public class StaticSmaliStmt implements Serializable{
 		this.setMoveInvokeResultFromID(-1);
 		this.setIsMoveResultStmt(false);
 		this.setMoveInvokeResultToID(-1);
+		this.setHasRealSourceLineNumber(false);
 	}
 
 	//////// setters & getters
@@ -267,6 +270,14 @@ public class StaticSmaliStmt implements Serializable{
 
 	public void setMoveInvokeResultToID(int moveInvokeResultToID) {
 		this.moveInvokeResultToID = moveInvokeResultToID;
+	}
+
+	public boolean isHasRealSourceLineNumber() {
+		return hasRealSourceLineNumber;
+	}
+
+	public void setHasRealSourceLineNumber(boolean hasRealSourceLineNumber) {
+		this.hasRealSourceLineNumber = hasRealSourceLineNumber;
 	}
 
 	

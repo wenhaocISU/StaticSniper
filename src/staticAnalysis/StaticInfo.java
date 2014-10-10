@@ -41,13 +41,12 @@ public class StaticInfo {
 		if (!manifestFile.exists() || !resFolder.exists()
 				|| !staticInfoFile.exists() || forceAll) {
 			ApkTool.extractAPK(staticApp);
-			
 			Soot.generateAppData(staticApp);
 			parseManifest();
 			SmaliParser.parseAll(staticApp);
 			parseXMLs();
 			processJimpleCode();
-			
+			ApkTool.assembleAPK(staticApp);
 			saveStaticInfo();
 			printErrorLog();
 			
