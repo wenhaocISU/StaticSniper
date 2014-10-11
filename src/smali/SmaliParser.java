@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
@@ -70,6 +72,7 @@ public class SmaliParser {
 			StaticMethod m = null;
 			String methodSmali = "";
 			boolean insideMethod = false;
+			boolean normalLabelAlreadyUsed = false;
 			int lastLineNumber = -1, stmtID = 0;
 			BlockLabel label = new BlockLabel();
 			int lastInvokeStmtID = -1;
@@ -84,7 +87,9 @@ public class SmaliParser {
 							c.getName() + ": " + bcSubSig + ">");
 					m.setIsConstructor(line.contains(" constructor "));
 					label = new BlockLabel();
-					label.setGeneralLabel("main");
+					ArrayList<String> newNL = new ArrayList<String>();
+					newNL.add(":main");
+					label.setNormalLabels(newNL);
 					lastInvokeStmtID = -1;
 					stmtID = 0;
 				}
@@ -131,6 +136,7 @@ public class SmaliParser {
 							s.setCatchRangeLabel(range);
 							s.setJumpTargetLabel(tgtLabel);
 							s.setBlockLabel(label);
+							normalLabelAlreadyUsed = true;
 							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
@@ -160,16 +166,16 @@ public class SmaliParser {
 							//	0x1389 -> :sswitch_1
 							//	0x138a -> :sswitch_2
 							//  .end sparse-switch
-							String wholeStmt = l;
+							String wholeStmt = line + "\n";
 							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
 							String ll = "";
 							while (!ll.equals(".end sparse-switch")) {
 								ll = in.readLine();
 								classSmali += ll + "\n";
 								methodSmali += ll + "\n";
+								wholeStmt += ll + "\n";
 								if (ll.contains(" "))
 									ll = ll.trim();
-								wholeStmt += "\n" + ll;
 								if (ll.contains(" -> :")) {
 									String thisValue = ll.split(" -> :")[0];
 									String tgtLabel = ll.split(" -> :")[1];
@@ -191,16 +197,16 @@ public class SmaliParser {
 							//  :pswitch_0
 							//  :pswitch_1
 							//  .end packed-switch
-							String wholeStmt = l;
+							String wholeStmt = line + "\n";
 							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
 							String ll = "", initValue = "";
 							while (!ll.equals(".end packed-switch")) {
 								ll = in.readLine();
 								classSmali += ll + "\n";
 								methodSmali += ll + "\n";
+								wholeStmt += ll + "\n";
 								if (ll.contains(" "))
 									ll = ll.trim();
-								wholeStmt += "\n\t" + ll;
 								int offset = 0;
 								if (ll.startsWith(".packed-switch ")) {
 									initValue = ll.substring(ll.indexOf(".packed-switch ") + ".packed-switch ".length());
@@ -213,6 +219,7 @@ public class SmaliParser {
 							s.setpswitchInitValue(initValue);
 							s.setSmaliStmt(wholeStmt);
 							s.setBlockLabel(label);
+							normalLabelAlreadyUsed = true;
 							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
@@ -222,7 +229,7 @@ public class SmaliParser {
 						}
 														// 3.3 special case :array
 						else if (l.startsWith(":array_")) {
-							String wholeStmt = l;
+							String wholeStmt = line + "\n";
 							while (!l.contains(".end array-data")) {
 								l = in.readLine();
 								classSmali += l + "\n";
@@ -239,34 +246,26 @@ public class SmaliParser {
 							lastLineNumber = -1;
 							m.addSmaliStatement(s);
 						}
-														// 3.4 normal cases (just labels)
+														// 3.4 other cases. They are:
+									// :try_start_, :try_end_, :catch_, :catchall_, :sswitch_, :pswtich_, :cond_, :goto_
 						else {
 							if (l.startsWith(":try_start_")) {
-								label.setTryLabel(l);
+								label.addTryLabel(l);
 							}
 							else if (l.startsWith(":try_end_")) {
-								label.setTryLabel("");
+								ArrayList<String> newTL = label.getTryLabels();
+								newTL.remove(l.replace("_end_", "_start_"));
+								label.setTryLabels(newTL);
 							}
-							else if (l.startsWith(":catch_")) {
-								label.setCatchLabel(l);
-							}
-							else if (l.startsWith(":catchall_")) {
-								label.setCatchAllLabel(l);
-							}
-							else if (l.startsWith(":sswitch_")) {
-								label.setSswitchLabel(l);
-							}
-							else if (l.startsWith(":pswitch_")) {
-								label.setPswitchLabel(l);
-							}
-							else if (l.startsWith(":cond_")){
-								label.setCondLabel(l);
-							}
-							else if (l.startsWith(":goto_")) {
-								label.setGotoLabel(l);
-							}
-							else {	// in case undiscovered label
-								label.setGeneralLabel(l);
+							else {
+								if (normalLabelAlreadyUsed) {
+									ArrayList<String> newNL = new ArrayList<String>();
+									newNL.add(l);
+									label.setNormalLabels(newNL);
+									normalLabelAlreadyUsed = false;
+								} else {
+									label.addNormalLabel(l);
+								}
 							}
 						}
 					}
@@ -277,6 +276,7 @@ public class SmaliParser {
 							continue;
 						StaticSmaliStmt s = new StaticSmaliStmt(l);
 						s.setBlockLabel(label);
+						normalLabelAlreadyUsed = true;
 						s.setStmtID(stmtID);
 						stmtID++;
 						s.setSourceLineNumber(lastLineNumber);

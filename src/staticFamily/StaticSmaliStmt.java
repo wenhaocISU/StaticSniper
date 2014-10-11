@@ -110,14 +110,8 @@ public class StaticSmaliStmt implements Serializable{
 
 	public void setBlockLabel(BlockLabel blockLabel) {
 		BlockLabel l = new BlockLabel();
-		l.setCatchAllLabel(blockLabel.getCatchAllLabel());
-		l.setCatchLabel(blockLabel.getCatchLabel());
-		l.setCondLabel(blockLabel.getCondLabel());
-		l.setGeneralLabel(blockLabel.getGeneralLabel());
-		l.setGotoLabel(blockLabel.getGotoLabel());
-		l.setPswitchLabel(blockLabel.getPswitchLabel());
-		l.setSswitchLabel(blockLabel.getSswitchLabel());
-		l.setTryLabel(blockLabel.getTryLabel());
+		l.setNormalLabels(blockLabel.getNormalLabels());
+		l.setTryLabels(blockLabel.getTryLabels());
 		this.blockLabel = l;
 	}
 
