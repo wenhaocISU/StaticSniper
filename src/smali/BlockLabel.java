@@ -1,6 +1,8 @@
 package smali;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class BlockLabel implements Serializable{
@@ -13,6 +15,7 @@ public class BlockLabel implements Serializable{
 	private String tryLabel;
 	private String catchLabel;
 	private String catchAllLabel;
+	private int blockNumber;
 	
 	public BlockLabel() {
 		this.setGeneralLabel("");
@@ -22,6 +25,7 @@ public class BlockLabel implements Serializable{
 		this.setSswitchLabel("");
 		this.setTryLabel("");
 		this.setCatchLabel("");
+		this.setCatchAllLabel("");
 	}
 	
 	public String getGotoLabel() {
@@ -64,7 +68,7 @@ public class BlockLabel implements Serializable{
 		this.tryLabel = tryLabel;
 	}
 
-	public String getNormalLabel() {
+	public String getGeneralLabel() {
 		return generalLabel;
 	}
 
@@ -86,6 +90,13 @@ public class BlockLabel implements Serializable{
 
 	public void setCatchAllLabel(String catchAllLabel) {
 		this.catchAllLabel = catchAllLabel;
+	}
+	
+	public List<String> toStringList() {
+		return Arrays.asList(
+				this.generalLabel, this.condLabel, this.gotoLabel,
+				this.pswitchLabel, this.sswitchLabel,
+				this.tryLabel, this.catchAllLabel, this.catchLabel);
 	}
 	
 }

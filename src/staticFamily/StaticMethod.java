@@ -278,10 +278,12 @@ public class StaticMethod implements Serializable {
 		this.smaliStatements.add(smaliStatement);
 	}
 
-
 	public void setSmaliCode(String smaliCode) {
 		this.smaliCode = smaliCode;
 	}
+
+	/////////////////////////////////////// utility
+	
 
 
 }

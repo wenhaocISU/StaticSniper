@@ -13,13 +13,31 @@ public class TaintHelper {
 	public TaintHelper(StaticApp staticApp) {
 		this.testApp = staticApp;
 	}
-	
-	public ArrayList<StaticMethod> findMissingMethods(String methodSignature, int missingLine) {
+	/**
+	 * suppose the lines that were hit during jdb are:
+	 *    line 1
+	 *    line 2
+	 *    line 3
+	 *    line 4
+	 *    line 8
+	 *    line 9
+	 *    line 10
+	 * and we wanna know how to hit line 5,6,7
+	 * 
+	 * 
+	 * */
+	public ArrayList<StaticMethod> findMissingMethods(String methodSignature, ArrayList<Integer> linesHit, int targetLine) {
 		ArrayList<StaticMethod> result = new ArrayList<StaticMethod>();
 		StaticMethod m = testApp.findMethodByFullSignature(methodSignature);
-		StaticSmaliStmt s = m.getSmaliStmt(missingLine);
+		StaticSmaliStmt s = m.getSmaliStmt(targetLine);
+		BlockLabel label = s.getBlockLabel();
+		ArrayList<StaticSmaliStmt> stmtsIn = new ArrayList<StaticSmaliStmt>();
 		
 		return result;
+	}
+	
+	private void analyzeHitLog(ArrayList<Integer> linesHit) {
+		
 	}
 	
 }

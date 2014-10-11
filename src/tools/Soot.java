@@ -89,6 +89,8 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			@Override
 			protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+				
+				
 				StaticMethod m = testApp.findMethodByFullSignature(b.getMethod().getSignature());
 				m.setHasBody(true);
 				m.setJimpleCode(b.toString());
@@ -164,7 +166,7 @@ public class Soot {
 			"-src-prec", "apk",
 			"-ire", "-allow-phantom-refs", "-w",
 			"-force-android-jar", Paths.androidJarPath,
-			"-process-path", testApp.getTestApp().getAbsolutePath(),
+			"-process-path", testApp.getAPKFile().getAbsolutePath(),
 		};
 		soot.Main.main(args);
 		soot.G.reset();
@@ -284,7 +286,7 @@ public class Soot {
 			}
 		}));
 
-		File outFile = new File(testApp.outPath + "/soot/Instrumentation/" + testApp.getTestApp().getName());
+		File outFile = new File(testApp.outPath + "/soot/Instrumentation/" + testApp.getAPKFile().getName());
 		if (outFile.exists())
 			outFile.delete();
 		String[] args = {
@@ -293,7 +295,7 @@ public class Soot {
 				"-src-prec", "apk",
 				"-ire", "-allow-phantom-refs", "-w",
 				"-force-android-jar", Paths.androidJarPath,
-				"-process-path", testApp.getTestApp().getAbsolutePath() };
+				"-process-path", testApp.getAPKFile().getAbsolutePath() };
 		Scene.v().addBasicClass("java.io.PrintStream", SootClass.SIGNATURES);
 		Scene.v().addBasicClass("java.lang.System", SootClass.SIGNATURES);
 		soot.Main.main(args);

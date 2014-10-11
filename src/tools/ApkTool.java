@@ -12,7 +12,7 @@ public class ApkTool {
 
 	public static void extractAPK(StaticApp testApp) {
 		try {
-			File app = testApp.getTestApp();
+			File app = testApp.getAPKFile();
 			System.out.println("\n-- apktool starting, target file: "
 					+ app.getAbsolutePath());
 
@@ -41,7 +41,7 @@ public class ApkTool {
 	
 	public static void assembleAPK(StaticApp testApp) {
 		String smaliFolder = testApp.outPath + "/apktool/";
-		String outPath = testApp.outPath + "/apktool/Instrumentation/unsigned_" + testApp.getTestApp().getName();
+		String outPath = testApp.outPath + "/apktool/Instrumentation/unsigned_" + testApp.getAPKFile().getName();
 /*		File outFile = new File(outPath);
 		if (outFile.exists())
 			outFile.delete();*/

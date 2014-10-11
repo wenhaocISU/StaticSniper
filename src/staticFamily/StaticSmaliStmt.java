@@ -39,7 +39,7 @@ public class StaticSmaliStmt implements Serializable{
 		this.setSmaliStmt("");
 		this.setSourceLineNumber(-1);
 		this.setStmtID(-1);
-		this.setBlockLabel(null);
+		this.setBlockLabel(new BlockLabel());
 		this.setFlowsThrough(true);
 		this.setBranches(false);
 		this.setJumpTargetLabel("");
@@ -66,7 +66,7 @@ public class StaticSmaliStmt implements Serializable{
 		this.setSmaliStmt(smaliStmt);
 		this.setSourceLineNumber(-1);
 		this.setStmtID(-1);
-		this.setBlockLabel(null);
+		this.setBlockLabel(new BlockLabel());
 		this.setFlowsThrough(true);
 		this.setBranches(false);
 		this.setJumpTargetLabel("");
@@ -109,7 +109,16 @@ public class StaticSmaliStmt implements Serializable{
 	}
 
 	public void setBlockLabel(BlockLabel blockLabel) {
-		this.blockLabel = blockLabel;
+		BlockLabel l = new BlockLabel();
+		l.setCatchAllLabel(blockLabel.getCatchAllLabel());
+		l.setCatchLabel(blockLabel.getCatchLabel());
+		l.setCondLabel(blockLabel.getCondLabel());
+		l.setGeneralLabel(blockLabel.getGeneralLabel());
+		l.setGotoLabel(blockLabel.getGotoLabel());
+		l.setPswitchLabel(blockLabel.getPswitchLabel());
+		l.setSswitchLabel(blockLabel.getSswitchLabel());
+		l.setTryLabel(blockLabel.getTryLabel());
+		this.blockLabel = l;
 	}
 
 	public int getStmtID() {
@@ -280,5 +289,8 @@ public class StaticSmaliStmt implements Serializable{
 		this.hasRealSourceLineNumber = hasRealSourceLineNumber;
 	}
 
+	
+	
+	///////////////////////////// utility
 	
 }

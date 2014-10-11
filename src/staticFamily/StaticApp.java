@@ -14,16 +14,14 @@ public class StaticApp implements Serializable {
 	public String outPath;
 	private String packageName;
 	private List<StaticClass> classList;
-	private List<StaticClass> activityList;
 
 	public StaticApp(File app) {
 		classList = new ArrayList<StaticClass>();
-		activityList = new ArrayList<StaticClass>();
 		testApp = app;
 		outPath = Paths.appDataDir + testApp.getName();
 	}
 
-	// //////////// attribute operation
+	////////////// attribute operation
 
 	public StaticClass getMainActivity() {
 		for (StaticClass c : classList) {
@@ -38,10 +36,14 @@ public class StaticApp implements Serializable {
 	}
 
 	public List<StaticClass> getActivityList() {
-		return activityList;
+		List<StaticClass> result = new ArrayList<StaticClass>();
+		for (StaticClass c : classList)
+			if (c.isActivity())
+				result.add(c);
+		return result;
 	}
 
-	public File getTestApp() {
+	public File getAPKFile() {
 		return testApp;
 	}
 
