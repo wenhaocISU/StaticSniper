@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
@@ -71,13 +72,12 @@ public class StaticInfo {
 
 	private static StaticApp loadStaticInfo(File staticInfoFile) {
 		StaticApp result = null;
+		ObjectInputStream in;
 		try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(staticInfoFile));
+			in = new ObjectInputStream(new FileInputStream(staticInfoFile));
 			result = (StaticApp) in.readObject();
 			in.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		}	catch (Exception e) {e.printStackTrace();}
 		return result;
 	}
 

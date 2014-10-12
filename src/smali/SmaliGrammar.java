@@ -2,7 +2,6 @@ package smali;
 
 public class SmaliGrammar {
 
-	
 	public static final String[] poundHeads = {
 		"# interfaces",
 		"# annotations",

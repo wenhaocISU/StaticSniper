@@ -5,6 +5,22 @@ import java.util.Arrays;
 
 public class StmtChecker {
 
+	
+	private static ArrayList<String> ifFormat = new ArrayList<String>(Arrays.asList(
+			"if-eq",
+			"if-ne",
+			"if-lt",
+			"if-ge",
+			"if-gt",
+			"if-le",
+			"if-eqz",
+			"if-nez",
+			"if-ltz",
+			"if-gez",
+			"if-gtz",
+			"if-lez"
+	));
+	
 	private static ArrayList<String> invokeFormat = new ArrayList<String>(Arrays.asList(
 			"invoke-virtual",
 			"invoke-super",
@@ -95,6 +111,19 @@ public class StmtChecker {
 	public static boolean isPutField(String l) {
 		if (l.contains(" "))
 			return putFieldFormat.contains(l.split(" ")[0]);
+		return false;
+	}
+	
+	public static boolean isIfStmt(String l) {
+		if (l.contains(", :"))
+			return ifFormat.contains(l.split(" ")[0]);
+		return false;
+	}
+	
+	public static boolean isSwitch(String l) {
+		if (l.startsWith("packed-switch ") ||
+			l.startsWith("sparse-switch "))
+			return true;
 		return false;
 	}
 	

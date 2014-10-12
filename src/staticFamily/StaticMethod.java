@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import smali.BlockLabel;
+
 @SuppressWarnings("serial")
 public class StaticMethod implements Serializable {
 
@@ -49,9 +51,16 @@ public class StaticMethod implements Serializable {
 
 	///////// get attributes
 	
-	public StaticSmaliStmt getSmaliStmt(int stmtID) {
+	public StaticSmaliStmt getSmaliStmtByID(int stmtID) {
 		for (StaticSmaliStmt s : smaliStatements)
 			if (s.getStmtID() == stmtID)
+				return s;
+		return null;
+	}
+	
+	public StaticSmaliStmt getSmaliStmtByLineNumber(int lineNumber) {
+		for (StaticSmaliStmt s : smaliStatements)
+			if (s.getSourceLineNumber() == lineNumber)
 				return s;
 		return null;
 	}
@@ -284,6 +293,50 @@ public class StaticMethod implements Serializable {
 
 	/////////////////////////////////////// utility
 	
-
+	public List<StaticSmaliStmt> getSmaliStmtsInNormalBlock(BlockLabel bl) {
+		List<StaticSmaliStmt> result = new ArrayList<StaticSmaliStmt>();
+		for (StaticSmaliStmt s : smaliStatements) {
+			if (s.getBlockLabel().hasSameNormalLabels(bl))
+				result.add(s);
+		}
+		return result;
+	}
+	
+	public List<BlockLabel> getBasicBlockLabels() {
+		List<BlockLabel> result = new ArrayList<BlockLabel>();
+		for (StaticSmaliStmt s : smaliStatements) {
+			BlockLabel newL = s.getBlockLabel();
+			boolean exists = false;
+			for (BlockLabel oldL : result)
+				if (oldL.hasSameNormalLabels(newL) && oldL.hasSameNormalLabelSection(newL)) {
+					exists = true;
+					break;
+				}
+			if (!exists)
+				result.add(newL);
+		}
+		return result;
+	}
+	
+	public Map<BlockLabel, List<StaticSmaliStmt>> getBlockGraph() {
+		Map<BlockLabel, List<StaticSmaliStmt>> blockGraph = new HashMap<BlockLabel, List<StaticSmaliStmt>>();
+		for (StaticSmaliStmt s : smaliStatements) {
+			BlockLabel key = s.getBlockLabel();
+			List<StaticSmaliStmt> value = new ArrayList<StaticSmaliStmt>();
+			for (Map.Entry<BlockLabel, List<StaticSmaliStmt>> entry : blockGraph.entrySet()) {
+				if (entry.getKey().isSameNormalLabel(s.getBlockLabel())) {
+					key = entry.getKey();
+					value = entry.getValue();
+					break;
+				}
+			}
+			value.add(s);
+			blockGraph.put(key, value);
+		}
+		return blockGraph;
+	}
+	
+	
+	
 
 }

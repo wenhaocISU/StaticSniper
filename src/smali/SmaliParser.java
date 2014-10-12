@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
@@ -18,16 +17,7 @@ public class SmaliParser {
 	private static StaticApp testApp;
 	private static int largestLineNumber = 0;
 	private static String classSmali = "";
-	
-	@SuppressWarnings("unused")
-	private final String[] smaliComments = {
-			"# interfaces",
-			"# annotations",
-			"# static fields",
-			"# instance fields",
-			"# direct methods",
-			"# virtual methods",
-	};
+
 	
 	public static void parseAll(StaticApp staticApp) {
 		testApp = staticApp;
@@ -42,10 +32,11 @@ public class SmaliParser {
 		}
 		File original = new File(testApp.outPath + "/apktool/smali/");
 		File instrumented = new File(testApp.outPath + "/apktool/newSmali/");
-		System.out.println("moving original smali files into /apktool/oldSmali/...");
+		System.out.println("\nmoving original smali files into /apktool/oldSmali/...");
 		original.renameTo(new File(testApp.outPath + "/apktool/oldSmali/"));
-		System.out.println("moving instrumented smali files into /apktool/smali/...");
+		System.out.println("\nmoving instrumented smali files into /apktool/smali/...");
 		instrumented.renameTo(new File(testApp.outPath + "/apktool/smali/"));
+		System.out.println("go to .../apktool/ folder and run 'java -jar .../apktool.jar b -f' to build instrumented app.");
 	}
 	
 	private static void writeInstrumentedSmali(File smaliFile) {
@@ -134,7 +125,7 @@ public class SmaliParser {
 								s.setExceptionType(exceptionType);
 							}
 							s.setCatchRangeLabel(range);
-							s.setJumpTargetLabel(tgtLabel);
+							s.setGotoTargetLabel(tgtLabel);
 							s.setBlockLabel(label);
 							normalLabelAlreadyUsed = true;
 							s.setBranches(true);
@@ -168,6 +159,7 @@ public class SmaliParser {
 							//  .end sparse-switch
 							String wholeStmt = line + "\n";
 							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
+							s.setSwitchTableName(l);
 							String ll = "";
 							while (!ll.equals(".end sparse-switch")) {
 								ll = in.readLine();
@@ -177,13 +169,13 @@ public class SmaliParser {
 								if (ll.contains(" "))
 									ll = ll.trim();
 								if (ll.contains(" -> :")) {
-									String thisValue = ll.split(" -> :")[0];
-									String tgtLabel = ll.split(" -> :")[1];
+									String thisValue = ll.split(" -> ")[0];
+									String tgtLabel = ll.split(" -> ")[1];
 									s.addSwitchTarget(thisValue, tgtLabel);
 								}
 							}
+							s.setIsSwitchTable(true);
 							s.setSmaliStmt(wholeStmt);
-							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
 							s.setSourceLineNumber(lastLineNumber);
@@ -199,7 +191,9 @@ public class SmaliParser {
 							//  .end packed-switch
 							String wholeStmt = line + "\n";
 							StaticSmaliStmt s = new StaticSmaliStmt(wholeStmt);
+							s.setSwitchTableName(l);
 							String ll = "", initValue = "";
+							int offset = 0;
 							while (!ll.equals(".end packed-switch")) {
 								ll = in.readLine();
 								classSmali += ll + "\n";
@@ -207,20 +201,17 @@ public class SmaliParser {
 								wholeStmt += ll + "\n";
 								if (ll.contains(" "))
 									ll = ll.trim();
-								int offset = 0;
 								if (ll.startsWith(".packed-switch ")) {
 									initValue = ll.substring(ll.indexOf(".packed-switch ") + ".packed-switch ".length());
 								} else if (ll.startsWith(":")) {
-									String tgtLabel = ll.substring(1);
+									String tgtLabel = ll;
 									s.addSwitchTarget("" + offset, tgtLabel);
 									offset++;
 								}
 							}
+							s.setIsSwitchTable(true);
 							s.setpswitchInitValue(initValue);
 							s.setSmaliStmt(wholeStmt);
-							s.setBlockLabel(label);
-							normalLabelAlreadyUsed = true;
-							s.setBranches(true);
 							s.setStmtID(stmtID);
 							stmtID++;
 							s.setSourceLineNumber(lastLineNumber);
@@ -262,6 +253,7 @@ public class SmaliParser {
 									ArrayList<String> newNL = new ArrayList<String>();
 									newNL.add(l);
 									label.setNormalLabels(newNL);
+									label.setNormalLabelSection(0);
 									normalLabelAlreadyUsed = false;
 								} else {
 									label.addNormalLabel(l);
@@ -291,14 +283,30 @@ public class SmaliParser {
 							classSmali = left + "    .line " + s.getSourceLineNumber() + "\n" + right;
 							m.addSourceLineNumber(s.getSourceLineNumber());
 						}
-						s.setFlowsThrough(true);
 						if (StmtChecker.isGoto(l)) {
 							label = new BlockLabel();
 							s.setGoesTo(true);
+							s.setFlowsThrough(false);
+							String tgtLabel = l.substring(l.lastIndexOf(":"));
+							s.setGotoTargetLabel(tgtLabel);
 						}
 						else if (StmtChecker.isReturn(l)) {
 							label = new BlockLabel();
 							s.setReturns(true);
+							s.setFlowsThrough(false);
+						}
+						else if (StmtChecker.isIfStmt(l)) {
+							String tgtLabel = l.substring(l.lastIndexOf(":"));
+							s.setFlowsThrough(false);
+							s.setBranches(true);
+							s.setIfTargetLabel(tgtLabel);
+							label.setNormalLabelSection(label.getNormalLabelSection()+1);
+						}
+						else if (StmtChecker.isSwitch(l)) {
+							String tgtLabel = l.substring(l.lastIndexOf(":"));
+							s.setFlowsThrough(false);
+							s.setSwitches(true);
+							s.setSwitchTableLabel(tgtLabel);
 						}
 						else if (StmtChecker.isInvoke(l)) {
 							String target = l.substring(l.indexOf("}, ") + "}, ".length());
@@ -310,7 +318,7 @@ public class SmaliParser {
 							lastInvokeStmtID = s.getStmtID();
 						}
 						else if (StmtChecker.isMoveResult(l)) {
-							StaticSmaliStmt is = m.getSmaliStmt(lastInvokeStmtID);
+							StaticSmaliStmt is = m.getSmaliStmtByID(lastInvokeStmtID);
 							is.setInvokeResultMoved(true);
 							is.setMoveInvokeResultToID(s.getStmtID());
 							s.setIsMoveResultStmt(true);

@@ -9,82 +9,45 @@ import smali.BlockLabel;
 @SuppressWarnings("serial")
 public class StaticSmaliStmt implements Serializable{
 
-	private String smaliStmt;
-	private int srcLineNumber;
-	private boolean hasRealSourceLineNumber;
-	private int stmtID;
-	private BlockLabel blockLabel;
-	private boolean flowsThrough, branches, goesTo, returns;
-	private Map<String, String> switchTargetMap;
-	private String jumpTargetLabel;
-	private String pswitchInitValue;
-	private String catchRangeLabel;
-	private String exceptionType;
-	private boolean isArrayDefStmt;
+	private String smaliStmt = "";
+	private int srcLineNumber = -1;
+	private boolean hasRealSourceLineNumber = false;
+	private int stmtID = -1;
+	private BlockLabel blockLabel = new BlockLabel();
 	
-	private boolean isInvokeStmt, invokeResultMoved;
-	private int moveInvokeResultToID;
-	private String invokeTarget;
+	private boolean flowsThrough = true;
+	private boolean branches = false, goesTo = false, returns = false, switches = false;
+	private String gotoTargetLabel = "";
+	private String ifTargetLabel = "";
+	private String switchTableLabel = "";
+	private String pswitchInitValue = "";
+	private String catchRangeLabel = "";
+	private String exceptionType = "";
 	
-	private boolean isGetFieldStmt;
-	private boolean isPutFieldStmt;
-	private String fieldTarget;
+	private boolean isArrayDefStmt = false;
 	
-	private boolean isMoveResultStmt;
-	private int moveInvokeResultFromID;
+	private boolean isSwitchTable = false;
+	private Map<String, String> switchTable = new HashMap<String, String>();
+	private String switchTableName = "";
+	
+	private boolean isInvokeStmt = false, invokeResultMoved = false;
+	private int moveInvokeResultToID = -1;
+	private String invokeTarget = "";
+	private boolean isMoveResultStmt = false;
+	private int moveInvokeResultFromID = -1;
+	
+	private boolean isGetFieldStmt = false;
+	private boolean isPutFieldStmt = false;
+	private String fieldTarget = "";
+	
+
 	
 	public StaticSmaliStmt() {
-		this.switchTargetMap = new HashMap<String, String>();
-		this.setJumpTargetLabel("");
-		this.setSmaliStmt("");
-		this.setSourceLineNumber(-1);
-		this.setStmtID(-1);
-		this.setBlockLabel(new BlockLabel());
-		this.setFlowsThrough(true);
-		this.setBranches(false);
-		this.setJumpTargetLabel("");
-		this.setCatchRangeLabel("");
-		this.setExceptionType("");
-		this.setIsArrayDefStmt(false);
-		this.setGoesTo(false);
-		this.setReturns(false);
-		this.setIsInvoke(false);
-		this.setIsGetFieldStmt(false);
-		this.setIsPutFieldStmt(false);
-		this.setInvokeTarget("");
-		this.setFieldTarget("");
-		this.setInvokeResultMoved(false);
-		this.setMoveInvokeResultFromID(-1);
-		this.setIsMoveResultStmt(false);
-		this.setMoveInvokeResultToID(-1);
-		this.setHasRealSourceLineNumber(false);
+
 	}
 	
 	public StaticSmaliStmt(String smaliStmt) {
-		this.switchTargetMap = new HashMap<String, String>();
-		this.setJumpTargetLabel("");
 		this.setSmaliStmt(smaliStmt);
-		this.setSourceLineNumber(-1);
-		this.setStmtID(-1);
-		this.setBlockLabel(new BlockLabel());
-		this.setFlowsThrough(true);
-		this.setBranches(false);
-		this.setJumpTargetLabel("");
-		this.setCatchRangeLabel("");
-		this.setExceptionType("");
-		this.setIsArrayDefStmt(false);
-		this.setGoesTo(false);
-		this.setReturns(false);
-		this.setIsInvoke(false);
-		this.setIsGetFieldStmt(false);
-		this.setIsPutFieldStmt(false);
-		this.setInvokeTarget("");
-		this.setFieldTarget("");
-		this.setInvokeResultMoved(false);
-		this.setMoveInvokeResultFromID(-1);
-		this.setIsMoveResultStmt(false);
-		this.setMoveInvokeResultToID(-1);
-		this.setHasRealSourceLineNumber(false);
 	}
 
 	//////// setters & getters
@@ -112,6 +75,7 @@ public class StaticSmaliStmt implements Serializable{
 		BlockLabel l = new BlockLabel();
 		l.setNormalLabels(blockLabel.getNormalLabels());
 		l.setTryLabels(blockLabel.getTryLabels());
+		l.setNormalLabelSection(blockLabel.getNormalLabelSection());
 		this.blockLabel = l;
 	}
 
@@ -139,20 +103,20 @@ public class StaticSmaliStmt implements Serializable{
 		this.branches = branches;
 	}
 
-	public String getJumpTargetLabel() {
-		return jumpTargetLabel;
+	public String getGotoTargetLabel() {
+		return gotoTargetLabel;
 	}
 
-	public void setJumpTargetLabel(String jumpTargetLabel) {
-		this.jumpTargetLabel = jumpTargetLabel;
+	public void setGotoTargetLabel(String jumpTargetLabel) {
+		this.gotoTargetLabel = jumpTargetLabel;
 	}
 
-	public Map<String, String> getSwitchMap() {
-		return switchTargetMap;
+	public Map<String, String> getSwitchTable() {
+		return switchTable;
 	}
 
 	public void addSwitchTarget(String value, String targetLabel) {
-		this.switchTargetMap.put(value, targetLabel);
+		this.switchTable.put(value, targetLabel);
 	}
 
 	public String getpswitchInitValue() {
@@ -281,6 +245,46 @@ public class StaticSmaliStmt implements Serializable{
 
 	public void setHasRealSourceLineNumber(boolean hasRealSourceLineNumber) {
 		this.hasRealSourceLineNumber = hasRealSourceLineNumber;
+	}
+
+	public String getIfTargetLabel() {
+		return ifTargetLabel;
+	}
+
+	public void setIfTargetLabel(String ifTargetLabel) {
+		this.ifTargetLabel = ifTargetLabel;
+	}
+
+	public String getSwitchTableLabel() {
+		return switchTableLabel;
+	}
+
+	public void setSwitchTableLabel(String switchTableLabel) {
+		this.switchTableLabel = switchTableLabel;
+	}
+
+	public boolean switches() {
+		return switches;
+	}
+
+	public void setSwitches(boolean switches) {
+		this.switches = switches;
+	}
+
+	public boolean isSwitchTable() {
+		return isSwitchTable;
+	}
+
+	public void setIsSwitchTable(boolean isSwitchTable) {
+		this.isSwitchTable = isSwitchTable;
+	}
+
+	public String getSwitchTableName() {
+		return switchTableName;
+	}
+
+	public void setSwitchTableName(String switchTableName) {
+		this.switchTableName = switchTableName;
 	}
 
 	
