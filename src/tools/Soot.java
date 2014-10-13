@@ -120,15 +120,19 @@ public class Soot {
 							&& refTargetF.getSubSignature().equals(stmtTargetSubsig)) {
 							if (refTargetC.getName().equals(stmtTargetC)) {
 								StaticField tgtF = testApp.findFieldByFullSignature(stmtTargetSig);
-								tgtF.addInCallSource(m.getFullJimpleSignature());
-								m.addFieldRef(tgtF.getFullJimpleSignature());
+								if (tgtF != null) {
+									tgtF.addInCallSource(m.getFullJimpleSignature());
+									m.addFieldRef(tgtF.getFullJimpleSignature());
+								}
 							} else {
 								StaticField tgtF = new StaticField(stmtTargetSig);
-								tgtF.setDeclaringClass(refTargetC.getName());
-								tgtF.addInCallSource(m.getFullJimpleSignature());
-								m.addFieldRef(tgtF.getFullJimpleSignature());
-								StaticClass tgtC = testApp.findClassByName(stmtTargetC);
-								tgtC.addField(tgtF);
+								if (tgtF != null) {
+									tgtF.setDeclaringClass(refTargetC.getName());
+									tgtF.addInCallSource(m.getFullJimpleSignature());
+									m.addFieldRef(tgtF.getFullJimpleSignature());
+									StaticClass tgtC = testApp.findClassByName(stmtTargetC);
+									tgtC.addField(tgtF);
+								}
 							}
 						}
 					}
