@@ -338,7 +338,5 @@ public class StaticMethod implements Serializable {
 		return blockGraph;
 	}
 	
-	
-	
 
 }

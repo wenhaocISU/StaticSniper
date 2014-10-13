@@ -89,9 +89,11 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			@Override
 			protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
-				
-				
+
 				StaticMethod m = testApp.findMethodByFullSignature(b.getMethod().getSignature());
+				System.out.println("looking for method with full signature: " + b.getMethod().getSignature());
+				if (m == null)
+					System.out.println("null method");
 				m.setHasBody(true);
 				m.setJimpleCode(b.toString());
 				for (Local l : b.getLocals()) {
@@ -130,12 +132,13 @@ public class Soot {
 							}
 						}
 					}
-					else if (s.containsMethodCall()) {
+					else if (stmt.containsInvokeExpr()) {
 						s.setContainsMethodCall(true);
 						s.setTargetSignature(stmt.getInvokeExpr().getMethod().getSignature());
 						SootMethod refTargetM = stmt.getInvokeExpr().getMethod();
 						SootClass refTargetC = refTargetM.getDeclaringClass();
 						String stmtTargetSig = s.getTargetSignature();
+						System.out.println("added method call target " + stmtTargetSig);
 						String stmtTargetC = stmtTargetSig.substring(1, stmtTargetSig.indexOf(": "));
 						String stmtTargetSubsig = stmtTargetSig.substring(stmtTargetSig.indexOf(": ")+2,
 													stmtTargetSig.length()-1);
@@ -143,15 +146,19 @@ public class Soot {
 							refTargetM.getSubSignature().equals(stmtTargetSubsig)) {
 							if (refTargetC.getName().equals(stmtTargetC)) {
 								StaticMethod tgtM = testApp.findMethodByFullSignature(stmtTargetSig);
-								tgtM.addInCallSource(m.getFullJimpleSignature());
-								m.addOutCallTarget(tgtM.getFullJimpleSignature());
+								if (tgtM != null) {
+									tgtM.addInCallSource(m.getFullJimpleSignature());
+									m.addOutCallTarget(tgtM.getFullJimpleSignature());
+								}
 							} else {
 								StaticMethod tgtM = new StaticMethod(stmtTargetSig);
-								tgtM.setDeclaringClass(refTargetC.getName());
-								tgtM.addInCallSource(m.getFullJimpleSignature());
-								m.addOutCallTarget(tgtM.getFullJimpleSignature());
-								StaticClass tgtC = testApp.findClassByName(stmtTargetC);
-								tgtC.addMethod(tgtM);
+								if (tgtM != null) {
+									tgtM.setDeclaringClass(refTargetC.getName());
+									tgtM.addInCallSource(m.getFullJimpleSignature());
+									m.addOutCallTarget(tgtM.getFullJimpleSignature());
+									StaticClass tgtC = testApp.findClassByName(stmtTargetC);
+									tgtC.addMethod(tgtM);
+								}
 							}
 						}
 					}

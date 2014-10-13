@@ -3,7 +3,10 @@ package staticFamily;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import main.Paths;
 
@@ -128,4 +131,52 @@ public class StaticApp implements Serializable {
 		return null;
 	}
 
+	///////////////////////////////////////
+	
+	public ArrayList<String> getCallSequenceForMethod(StaticMethod m) {
+		Map<String, Boolean> callMap = new HashMap<String, Boolean>();
+		callMap.put(m.getFullJimpleSignature(), false);
+		boolean finished = false;
+		while (!finished) {
+			ArrayList<String> addAfterIteration = new ArrayList<String>();
+			Iterator<Map.Entry<String, Boolean>> it = callMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Boolean> entry = it.next();
+				if (entry.getValue())
+					continue;
+				String currentSource = entry.getKey();
+				if (entry.getKey().contains(","))
+					currentSource = entry.getKey().split(",")[entry.getKey().split(",").length-1];
+				StaticMethod srcM = findMethodByFullSignature(currentSource);
+				if (srcM == null || srcM.getInCallSourceSigs().size()<1) {
+					entry.setValue(true);
+					continue;
+				}
+				ArrayList<String> newSources = srcM.getInCallSourceSigs();
+				int newSrcCount = 0;
+				for (String newSrc : newSources) {
+					if (callMap.containsKey(newSrc))
+						continue;
+					newSrcCount++;
+					addAfterIteration.add(entry.getKey() + "," + newSrc);
+				}
+				if (newSrcCount > 0)
+					it.remove();
+			}
+			for (String newEntry: addAfterIteration)
+				callMap.put(newEntry, false);
+			finished = true;
+			for (Map.Entry<String, Boolean> e : callMap.entrySet()) {
+				if (!e.getValue()) {
+					finished = false;
+					break;
+				}
+			}
+		}
+		ArrayList<String> results = new ArrayList<String>();
+		for (Map.Entry<String, Boolean> e : callMap.entrySet())
+			results.add(e.getKey());
+		return results;
+	}
+	
 }
