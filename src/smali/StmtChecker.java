@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class StmtChecker {
 
-	
 	private static ArrayList<String> ifFormat = new ArrayList<String>(Arrays.asList(
 			"if-eq",
 			"if-ne",

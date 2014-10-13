@@ -83,7 +83,8 @@ public class StaticField implements Serializable {
 	//////////// add/set attributes
 	
 	public void addInCallSource(String sourceSig) {
-		inCallSourceSigs.add(sourceSig);
+		if (!inCallSourceSigs.contains(sourceSig))
+			inCallSourceSigs.add(sourceSig);
 	}
 	
 	public void setDeclaration(String declaration) {

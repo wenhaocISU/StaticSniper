@@ -173,6 +173,7 @@ public class Soot {
 	}
 
 	private static StaticClass extractClassInfo(SootClass sootC, StaticClass c) {
+		c.setDexFormatName("L" + sootC.getName().replace(".", "/"));
 		c.setIsAbstract(sootC.isAbstract());
 		c.setIsInDEX(true);
 		c.setIsInterface(sootC.isInterface());

@@ -75,6 +75,13 @@ public class StaticApp implements Serializable {
 		return null;
 	}
 
+	public StaticClass findClassByDexName(String dexName) {
+		for (StaticClass c : classList)
+			if (c.getDexFormatName().equals(dexName))
+				return c;
+		return null;
+	}
+	
 	public StaticMethod findMethodByName(String className, String methodName) {
 		return findClassByName(className).findMethodByName(methodName);
 	}

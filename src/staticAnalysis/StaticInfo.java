@@ -74,6 +74,7 @@ public class StaticInfo {
 		StaticApp result = null;
 		ObjectInputStream in;
 		try {
+			System.out.println("retrieving StaticApp object from " + staticInfoFile.getAbsolutePath() + " ...");
 			in = new ObjectInputStream(new FileInputStream(staticInfoFile));
 			result = (StaticApp) in.readObject();
 			in.close();

@@ -8,6 +8,8 @@ import java.util.List;
 public class StaticClass implements Serializable {
 
 	private String name;
+	private String dexFormatName;
+	
 	private int modifiers;
 
 	private List<StaticMethod> methods;
@@ -282,6 +284,14 @@ public class StaticClass implements Serializable {
 
 	public void setIsProtected(boolean isProtected) {
 		this.isProtected = isProtected;
+	}
+
+	public String getDexFormatName() {
+		return dexFormatName;
+	}
+
+	public void setDexFormatName(String dexFormatName) {
+		this.dexFormatName = dexFormatName;
 	}
 
 }

@@ -200,11 +200,13 @@ public class StaticMethod implements Serializable {
 	}
 	
 	public void addOutCallTarget(String targetSig) {
-		outCallTargetSigs.add(targetSig);
+		if (!outCallTargetSigs.contains(targetSig))
+			outCallTargetSigs.add(targetSig);
 	}
 
 	public void addInCallSource(String sourceSig) {
-		inCallSourceSigs.add(sourceSig);
+		if (!inCallSourceSigs.contains(sourceSig))
+			inCallSourceSigs.add(sourceSig);
 	}
 
 	public void addFieldRef(String fieldSig) {
