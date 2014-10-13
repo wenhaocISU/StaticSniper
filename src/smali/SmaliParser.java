@@ -313,6 +313,9 @@ public class SmaliParser {
 							String tgtClass = ClassNameDexToJava(target.split("->")[0]);
 							String tgtMethodSubSig = target.split("->")[1];
 							target = "<" + tgtClass + ": " + tgtMethodSubSig + ">";
+							StaticMethod tgtM = testApp.findMethodByBytecodeSignature(target);
+							if (tgtM != null)
+								target = tgtM.getFullJimpleSignature();
 							s.setIsInvoke(true);
 							s.setInvokeTarget(target);
 							lastInvokeStmtID = s.getStmtID();

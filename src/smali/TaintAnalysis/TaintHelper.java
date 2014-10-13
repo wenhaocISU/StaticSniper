@@ -61,11 +61,9 @@ public class TaintHelper {
 		
 	}
 	
-	public void setTargetLine(int targetLine) {
-		this.targetLine = targetLine;
-	}
 	
-	public ArrayList<String> findTaintedMethods() {
+	public ArrayList<String> findTaintedMethods(int tgtLine) {
+		this.targetLine = tgtLine;
 		StaticSmaliStmt tgtStmt = m.getSmaliStmtByLineNumber(targetLine);
 		List<StaticSmaliStmt> sourceStmts = findJumpSourceStmt(tgtStmt);
 		if (tgtStmt == null) {
