@@ -14,6 +14,7 @@ import main.Paths;
 public class StaticApp implements Serializable {
 
 	private File testApp;
+	public String instrumentedAppPath;
 	public String outPath;
 	private String packageName;
 	private List<StaticClass> classList;
@@ -22,10 +23,20 @@ public class StaticApp implements Serializable {
 		classList = new ArrayList<StaticClass>();
 		testApp = app;
 		outPath = Paths.appDataDir + testApp.getName();
+		instrumentedAppPath = outPath + "/InstrumentedApps/";
 	}
 
 	////////////// attribute operation
 
+	public String getSmaliInstrumentedAppPath() {
+		return instrumentedAppPath + "smali_" + testApp.getName();
+	}
+	
+	public String getSootInstrumentedAppPath() {
+		return instrumentedAppPath + "soot_" + testApp.getName();
+	}
+	
+	
 	public StaticClass getMainActivity() {
 		for (StaticClass c : classList) {
 			if (c.isMainActivity())

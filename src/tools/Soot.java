@@ -89,7 +89,7 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			@Override
 			protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
-
+				
 				StaticMethod m = testApp.findMethodByFullSignature(b.getMethod().getSignature());
 				System.out.println("looking for method with full signature: " + b.getMethod().getSignature());
 				if (m == null)
@@ -138,7 +138,7 @@ public class Soot {
 						SootMethod refTargetM = stmt.getInvokeExpr().getMethod();
 						SootClass refTargetC = refTargetM.getDeclaringClass();
 						String stmtTargetSig = s.getTargetSignature();
-						System.out.println("added method call target " + stmtTargetSig);
+						
 						String stmtTargetC = stmtTargetSig.substring(1, stmtTargetSig.indexOf(": "));
 						String stmtTargetSubsig = stmtTargetSig.substring(stmtTargetSig.indexOf(": ")+2,
 													stmtTargetSig.length()-1);
@@ -150,6 +150,8 @@ public class Soot {
 									tgtM.addInCallSource(m.getFullJimpleSignature());
 									m.addOutCallTarget(tgtM.getFullJimpleSignature());
 								}
+								else
+									System.out.println("-stmt- " + s.getJimpleStmt());
 							} else {
 								StaticMethod tgtM = new StaticMethod(stmtTargetSig);
 								if (tgtM != null) {
@@ -298,7 +300,7 @@ public class Soot {
 		if (outFile.exists())
 			outFile.delete();
 		String[] args = {
-				"-d", testApp.outPath + "/soot/Instrumentation",
+				"-d", testApp.instrumentedAppPath,
 				"-f", "dex",
 				"-src-prec", "apk",
 				"-ire", "-allow-phantom-refs", "-w",
