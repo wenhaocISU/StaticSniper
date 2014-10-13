@@ -96,6 +96,15 @@ public class StaticApp implements Serializable {
 		return null;
 	}
 	
+	public StaticMethod findMethodFromLineNumber(String className, int lineNumber) {
+		StaticClass c = findClassByName(className);
+		for (StaticMethod m : c.getMethodList()) {
+			if (m.getAllSourceLineNumbers().contains(lineNumber))
+				return m;
+		}
+		return null;
+	}
+	
 	public StaticMethod findMethodByName(String className, String methodName) {
 		return findClassByName(className).findMethodByName(methodName);
 	}
