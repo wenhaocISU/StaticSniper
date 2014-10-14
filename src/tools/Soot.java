@@ -308,7 +308,7 @@ public class Soot {
 		if (outFile.exists())
 			outFile.delete();
 		String[] args = {
-				"-d", testApp.instrumentedAppPath,
+				"-d", testApp.outPath + "/soot/Instrumentation",
 				"-f", "dex",
 				"-src-prec", "apk",
 				"-ire", "-allow-phantom-refs", "-w",
