@@ -29,11 +29,13 @@ public class StaticApp implements Serializable {
 	////////////// attribute operation
 
 	public String getSmaliInstrumentedAppPath() {
-		return instrumentedAppPath + "smali_" + testApp.getName();
+		String name = testApp.getName().substring(0, testApp.getName().lastIndexOf(".apk"));
+		return instrumentedAppPath + name + "_smali.apk";
 	}
 	
 	public String getSootInstrumentedAppPath() {
-		return instrumentedAppPath + "soot_" + testApp.getName();
+		String name = testApp.getName().substring(0, testApp.getName().lastIndexOf(".apk"));
+		return instrumentedAppPath + name + "_soot.apk";
 	}
 	
 	
