@@ -240,7 +240,7 @@ public class Soot {
 	public static int returnCounter = 1;
 
 	public static void InstrumentEveryMethod(StaticApp staticApp) throws Exception {
-
+		
 		testApp = staticApp;
 		File instrumentLog = new File(testApp.outPath + "/soot/Instrumentation/methodLevelLog.csv");
 		instrumentLog.getParentFile().mkdirs();
@@ -248,6 +248,7 @@ public class Soot {
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransform", new BodyTransformer() {
 			protected void internalTransform(final Body b, String phaseName,Map<String, String> options) {
 				String className = b.getMethod().getDeclaringClass().getName();
+				//System.out.println("-NOO- " + b.getMethod().getSignature());
 				final Local l_outPrint = Jimple.v().newLocal("outPrint", RefType.v("java.io.PrintStream"));
 				b.getLocals().add(l_outPrint);
 				final SootMethod out_println = Scene.v().getSootClass("java.io.PrintStream").getMethod("void println(java.lang.String)");
@@ -255,7 +256,10 @@ public class Soot {
 				PatchingChain<Unit> units = b.getUnits();
 				// first instrument the first line
 				Iterator<Unit> unitsIT = b.getUnits().snapshotIterator();
-				for (int i = 0; i < b.getMethod().getParameterCount()+1; i++)
+				int hasThis = 1;
+				if (b.getMethod().isStatic())
+					hasThis = 0;
+				for (int i = 0; i < b.getMethod().getParameterCount()+hasThis; i++)
 					unitsIT.next();
 				Unit firstUnit = unitsIT.next();
 				units.insertBefore(Jimple.v().newAssignStmt(l_outPrint,
