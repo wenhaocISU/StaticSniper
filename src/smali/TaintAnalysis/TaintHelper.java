@@ -58,7 +58,6 @@ public class TaintHelper {
 			if (!labelExists)
 				blocksHit.add(stmtHit.getBlockLabel());
 		}
-		
 	}
 	
 	
@@ -113,7 +112,7 @@ public class TaintHelper {
 			//System.out.println("  - " + src.getSourceLineNumber() + "  " + src.getSmaliStmt());
 			ArrayList<String> stmtResult = ConditionStmtSolver(src);
 			for (String sR : stmtResult)
-				if (!result.contains(sR))
+				if (!result.contains(sR) && !sR.equals(m.getFullJimpleSignature()))
 					result.add(sR);
 		}
 		return result;
