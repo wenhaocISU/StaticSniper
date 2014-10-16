@@ -69,28 +69,20 @@ public class TaintHelper {
 			System.out.println("Error: can not find the line number " + targetLine);
 			return new ArrayList<String>();
 		}
-		//System.out.println("--- src ---\n" + tgtStmt.getSourceLineNumber() + " " + tgtStmt.getSmaliStmt());
 
 		boolean allReachedEnd = false;
-		//int i = 1;
 		while (!allReachedEnd) {
-			//System.out.println("\n" + i + " run: ");
 			List<StaticSmaliStmt> newSrcStmts = new ArrayList<StaticSmaliStmt>();
 			for (StaticSmaliStmt srcStmt : sourceStmts) {
 				if (blockAlreadyHit(srcStmt.getBlockLabel())) {
-					//System.out.println("already hit: " + srcStmt.getSourceLineNumber() + "  " + srcStmt.getSmaliStmt());
 					if (!newSrcStmts.contains(srcStmt)) {
 						newSrcStmts.add(srcStmt);
-						//System.out.println("-added- " + srcStmt.getSourceLineNumber() + "  " + srcStmt.getSmaliStmt());
 					}
 				} else {
-					//System.out.println("didn't hit: " + srcStmt.getSourceLineNumber() + "  " + srcStmt.getSmaliStmt());
 					List<StaticSmaliStmt> toAddNewSrcStmts = findJumpSourceStmt(srcStmt);
-					//System.out.println("  " + toAddNewSrcStmts.size() + " more found.");
 					for (StaticSmaliStmt toAdd : toAddNewSrcStmts)
 						if (!newSrcStmts.contains(toAdd)) {
 							newSrcStmts.add(toAdd);
-							//System.out.println("-added- " + srcStmt.getSourceLineNumber() + "  " + srcStmt.getSmaliStmt());
 						}
 				}
 			}
@@ -103,13 +95,9 @@ public class TaintHelper {
 			}
 			sourceStmts = newSrcStmts;
 		}
-		// now we have a list of stmts that were hit, but did not jump to our targets
-		//System.out.println("\n--- final ---");
-		//System.out.println("-Target- " + tgtStmt.getSourceLineNumber());
-		//System.out.println("\n# responsible stmts for line " + tgtStmt.getSourceLineNumber());
+		// now we have a list of source stmts that were hit, but did not jump to our targets
 		ArrayList<String> result = new ArrayList<String>();
 		for (StaticSmaliStmt src : sourceStmts) {
-			//System.out.println("  - " + src.getSourceLineNumber() + "  " + src.getSmaliStmt());
 			ArrayList<String> stmtResult = ConditionStmtSolver(src);
 			for (String sR : stmtResult)
 				if (!result.contains(sR) && !sR.equals(m.getFullJimpleSignature()))
@@ -123,7 +111,6 @@ public class TaintHelper {
 		ArrayList<String> result = new ArrayList<String>();
 		if (v.equals("") || v.startsWith("p"))
 			return result;
-		//System.out.println("   * tracing variable " + tgtV + " from line " + lastLine);
 		boolean useful = false;
 		for (int i = linesHit.size()-1; i >= 0 ; i--) {
 			if (linesHit.get(i) == lastLine) {
@@ -133,19 +120,17 @@ public class TaintHelper {
 			if (!useful)
 				continue;
 			StaticSmaliStmt s = m.getSmaliStmtByLineNumber(linesHit.get(i));
-			  // is moved from another object
 			if (!s.isMoveResultStmt() && s.getSmaliStmt().startsWith("move") && s.getSmaliStmt().contains(", ")) {
 				String left = s.getSmaliStmt().split(", ")[0];
 				String right = s.getSmaliStmt().split(", ")[1];
 				if (left.endsWith(v)) {
 					return traceVariable(right, s.getSourceLineNumber());
 				}
-			} // is from a method return
+			} 
+			// is from a method return
 			else if (s.isMoveResultStmt() && s.getSmaliStmt().endsWith(" " + v)) {
 				StaticSmaliStmt invokeS = m.getSmaliStmtByID(s.getMoveInvokeResultFromID());
-				
-				//System.out.println("   " + v + " in return of " + invokeS.getSourceLineNumber());
-				// when this happens, the method parameters becomes our new target variable
+
 				String parameters = invokeS.getSmaliStmt().substring(
 						invokeS.getSmaliStmt().indexOf("{")+1,
 						invokeS.getSmaliStmt().indexOf("}"));
@@ -163,7 +148,8 @@ public class TaintHelper {
 					result.add(invokeS.getInvokeTarget());
 				}
 				return result;
-			} // is from a field
+			}
+			// is from a field
 			else if (s.isGetFieldStmt()) {
 				String firstV = s.getSmaliStmt().substring(
 						s.getSmaliStmt().indexOf(" ")+1,
@@ -176,20 +162,19 @@ public class TaintHelper {
 					tgtFieldName = tgtFieldName.split(":")[0];
 					StaticClass c = testApp.findClassByDexName(tgtClassName);
 					StaticField f = c.findFieldByName(tgtFieldName);
-					//System.out.println(" #result for " + v + ": " + f.getDeclaration());
 					return f.getInCallSourceSigs();
 				}
-			} // is a const
+			}
+			// is a const
 			else if (s.getSmaliStmt().startsWith("const") &&
 					 s.getSmaliStmt().contains(" " + v + ", ")) {
-				//System.out.println(" #result for " + v + ": it's a const");
 					return result;
-			} // is other operations
+			}
+			// is other operations
 			else if (s.flowsThrough() &&
 					s.getSmaliStmt().contains(" " + v + ", ")) {
 				String right = s.getSmaliStmt().substring(
 						s.getSmaliStmt().indexOf(" " + v + ", ") + (" " + v + ", ").length());
-				//System.out.println(" #result for " + v + ": " + right);
 				if (right.contains(", ")) {
 					if (right.split(", ")[0].equals(v) && right.split(", ")[1].equals(v))
 						continue;
@@ -211,7 +196,6 @@ public class TaintHelper {
 	}
 	
 	private ArrayList<String> ConditionStmtSolver(StaticSmaliStmt theStmt) {
-		//System.out.println("solving " + theStmt.getSourceLineNumber() + " " + theStmt.getSmaliStmt());
 		if (!theStmt.branches() && !theStmt.switches()){
 			System.out.println("Solving Condition Stmt variable, unexpected situation...");
 			System.out.println(theStmt.getSourceLineNumber() + " " + theStmt.getSmaliStmt());
@@ -221,7 +205,7 @@ public class TaintHelper {
 		Map<String, Boolean> vMap = new HashMap<String, Boolean>();
 		vMap.put(ssP.getFirstVariable(), false);
 		vMap.put(ssP.getSecondVariable(), false);
-		///////// use the hit line
+		///////// use the lines that were already hit to find answer
 		ArrayList<String> one = traceVariable(ssP.getFirstVariable(), theStmt.getSourceLineNumber());
 		ArrayList<String> two = traceVariable(ssP.getSecondVariable(), theStmt.getSourceLineNumber());
 		for (String t : two)
@@ -239,24 +223,19 @@ public class TaintHelper {
 	}
 	
  	private List<StaticSmaliStmt> findJumpSourceStmt(StaticSmaliStmt tgtStmt) {
- 		//System.out.println("   looking for src for stmt " + tgtStmt.getSourceLineNumber() + " " + tgtStmt.getSmaliStmt());
 		StaticSmaliStmt firstStmtInBlock = getFirstStmtInBlock(tgtStmt.getBlockLabel());
-		//System.out.println("   moving to first stmt in block " + firstStmtInBlock.getSourceLineNumber() + " " + firstStmtInBlock.getSmaliStmt());
 		List<StaticSmaliStmt> result = new ArrayList<StaticSmaliStmt>();
 		for (StaticSmaliStmt srcStmt : m.getSmaliStatements()) {
 			if (srcStmt.getBlockLabel().isSameNormalLabel(tgtStmt.getBlockLabel()))
 				continue;
 			// 1. neighbor (normal stmts or if stmts can be a source)
 			if (srcStmt.getStmtID() == firstStmtInBlock.getStmtID()-1) {
-				//System.out.println("   checking up1 stmt: " + srcStmt.getSourceLineNumber());
 				if (srcStmt.flowsThrough() || srcStmt.branches()) {
-					//System.out.println("   up1 stmt fits." + srcStmt.getSourceLineNumber());
 					result.add(srcStmt);
 				}
 			}
 			// 2. goto
 			else if (srcStmt.goesTo()) {
-				//System.out.println("   checking goto stmt " + srcStmt.getSourceLineNumber());
 				String tgtLabel = srcStmt.getGotoTargetLabel();
 				if (firstStmtInBlock.getBlockLabel().getNormalLabels().contains(tgtLabel))
 					result.add(srcStmt);
@@ -269,20 +248,14 @@ public class TaintHelper {
 			}
 			// 4. switch
 			else if (srcStmt.switches()) {
-				//System.out.println("   checking switch stmt " + srcStmt.getSourceLineNumber() + " " + srcStmt.getSmaliStmt());
 				String switchTableLabel = srcStmt.getSwitchTableLabel();
-				//System.out.println("    switch table label is at " + switchTableLabel);
 				for (StaticSmaliStmt switchTableStmt : m.getSmaliStatements()) {
 					// find the switch table content
 					if (!switchTableStmt.isSwitchTable() || !switchTableStmt.getSwitchTableName().equals(switchTableLabel))
 						continue;
-
 					Map<String, String> switchTable = switchTableStmt.getSwitchTable();
-					//System.out.println("    found switch table " + switchTable.size());
 					boolean useful = false;
-					// if any entry in the table points to tgtS's label, srcS is a source.
 					for (Map.Entry<String, String> entry : switchTable.entrySet()) {
-						//System.out.println("     found an target label " + entry.getValue());
 						if (firstStmtInBlock.getBlockLabel().getNormalLabels().contains(entry.getValue())) {
 							useful = true;
 							break;
@@ -293,7 +266,6 @@ public class TaintHelper {
 				}
 			}
 		}
-		//System.out.println("   found " + result.size() + " src");
 		return result;
 	}
 	
@@ -327,7 +299,7 @@ public class TaintHelper {
 			}
 		}
 	}
-	
+
 
 	
 }

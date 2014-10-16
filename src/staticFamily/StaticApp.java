@@ -167,8 +167,8 @@ public class StaticApp implements Serializable {
 				if (entry.getValue())
 					continue;
 				String currentSource = entry.getKey();
-				if (entry.getKey().contains(","))
-					currentSource = entry.getKey().split(",")[entry.getKey().split(",").length-1];
+				if (entry.getKey().contains(";"))
+					currentSource = entry.getKey().split(";")[entry.getKey().split(";").length-1];
 				StaticMethod srcM = findMethodByFullSignature(currentSource);
 				if (srcM == null || srcM.getInCallSourceSigs().size()<1) {
 					entry.setValue(true);
@@ -180,7 +180,7 @@ public class StaticApp implements Serializable {
 					if (callMap.containsKey(newSrc))
 						continue;
 					newSrcCount++;
-					addAfterIteration.add(entry.getKey() + "," + newSrc);
+					addAfterIteration.add(entry.getKey() + ";" + newSrc);
 				}
 				if (newSrcCount > 0)
 					it.remove();
