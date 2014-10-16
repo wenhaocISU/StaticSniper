@@ -98,16 +98,22 @@ public class TaintHelper {
 		// now we have a list of source stmts that were hit, but did not jump to our targets
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		Map<String, ArrayList<String>> fieldTaintMap = new HashMap<String, ArrayList<String>>();
+		String fieldTarget = "other";
 		for (StaticSmaliStmt src : sourceStmts) {
 			ArrayList<String> stmtResult = ConditionStmtSolver(src);
 			for (String sR : stmtResult) {
-				String fieldTarget = sR.split(";")[0];
-				String methodSig = sR.split(";")[1];
+				String methodSig = sR;
+				fieldTarget += "d";
+				if (sR.contains(";")) {
+					fieldTarget = sR.split(";")[0];
+					methodSig = sR.split(";")[1];
+				}
 				ArrayList<String> methods = new ArrayList<String>();
-				if (!fieldTaintMap.containsKey(fieldTarget))
+				if (fieldTaintMap.containsKey(fieldTarget))
 					methods = fieldTaintMap.get(fieldTarget);
 				if (!methods.contains(methodSig) && !methodSig.equals(m.getFullJimpleSignature()))
 					methods.add(methodSig);
+				fieldTaintMap.put(fieldTarget, methods);
 			}
 		}
 		for (Map.Entry<String, ArrayList<String>> entry : fieldTaintMap.entrySet()) {
