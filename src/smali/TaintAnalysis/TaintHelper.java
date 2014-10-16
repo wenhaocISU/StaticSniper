@@ -61,13 +61,13 @@ public class TaintHelper {
 	}
 	
 	
-	public ArrayList<String> findTaintedMethods(int tgtLine) {
+	public ArrayList<ArrayList<String>> findTaintedMethods(int tgtLine) {
 		this.targetLine = tgtLine;
 		StaticSmaliStmt tgtStmt = m.getSmaliStmtByLineNumber(targetLine);
 		List<StaticSmaliStmt> sourceStmts = findJumpSourceStmt(tgtStmt);
 		if (tgtStmt == null) {
 			System.out.println("Error: can not find the line number " + targetLine);
-			return new ArrayList<String>();
+			return new ArrayList<ArrayList<String>>();
 		}
 
 		boolean allReachedEnd = false;
@@ -96,12 +96,22 @@ public class TaintHelper {
 			sourceStmts = newSrcStmts;
 		}
 		// now we have a list of source stmts that were hit, but did not jump to our targets
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		Map<String, ArrayList<String>> fieldTaintMap = new HashMap<String, ArrayList<String>>();
 		for (StaticSmaliStmt src : sourceStmts) {
 			ArrayList<String> stmtResult = ConditionStmtSolver(src);
-			for (String sR : stmtResult)
-				if (!result.contains(sR) && !sR.equals(m.getFullJimpleSignature()))
-					result.add(sR);
+			for (String sR : stmtResult) {
+				String fieldTarget = sR.split(";")[0];
+				String methodSig = sR.split(";")[1];
+				ArrayList<String> methods = new ArrayList<String>();
+				if (!fieldTaintMap.containsKey(fieldTarget))
+					methods = fieldTaintMap.get(fieldTarget);
+				if (!methods.contains(methodSig) && !methodSig.equals(m.getFullJimpleSignature()))
+					methods.add(methodSig);
+			}
+		}
+		for (Map.Entry<String, ArrayList<String>> entry : fieldTaintMap.entrySet()) {
+			result.add(entry.getValue());
 		}
 		return result;
 	}
@@ -162,7 +172,11 @@ public class TaintHelper {
 					tgtFieldName = tgtFieldName.split(":")[0];
 					StaticClass c = testApp.findClassByDexName(tgtClassName);
 					StaticField f = c.findFieldByName(tgtFieldName);
-					return f.getInCallSourceSigs();
+					ArrayList<String> fieldTainters = f.getInCallSourceSigs();
+					for (String fT : fieldTainters) {
+						result.add(f.getFullJimpleSignature() + ";" + fT);
+					}
+					return result;
 				}
 			}
 			// is a const
