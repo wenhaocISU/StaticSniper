@@ -1,4 +1,4 @@
-package smali.TaintAnalysis;
+package smali.BackTrackAnalysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import staticFamily.StaticField;
 import staticFamily.StaticMethod;
 import staticFamily.StaticSmaliStmt;
 
-public class TaintHelper {
+public class BackTrackHelper {
 
 	private StaticApp testApp;
 	
@@ -25,7 +25,7 @@ public class TaintHelper {
 	private int targetLine;
 
 	
-	public TaintHelper(StaticApp staticApp) {
+	public BackTrackHelper(StaticApp staticApp) {
 		this.testApp = staticApp;
 		this.m = null;
 		this.linesHit = new ArrayList<Integer>();
@@ -61,7 +61,7 @@ public class TaintHelper {
 	}
 	
 	
-	public ArrayList<ArrayList<String>> findTaintedMethods(int tgtLine) {
+	public ArrayList<ArrayList<String>> findResponsibleMethods(int tgtLine) {
 		this.targetLine = tgtLine;
 		StaticSmaliStmt tgtStmt = m.getSmaliStmtByLineNumber(targetLine);
 		List<StaticSmaliStmt> sourceStmts = findJumpSourceStmt(tgtStmt);
