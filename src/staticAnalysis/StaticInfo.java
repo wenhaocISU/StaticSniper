@@ -87,6 +87,7 @@ public class StaticInfo {
 			File outFile = new File(staticApp.outPath + "/static.info");
 			if (outFile.exists())
 				outFile.delete();
+			System.out.println("saving StaticApp object to: " + outFile.getAbsolutePath() + " ...");
 			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outFile));
 			out.writeObject(staticApp);
 			out.close();
