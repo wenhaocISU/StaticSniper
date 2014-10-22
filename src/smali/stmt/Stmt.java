@@ -1,8 +1,11 @@
 package smali.stmt;
 
+import java.io.Serializable;
+
 import smali.BlockLabel;
 
-public class Stmt {
+@SuppressWarnings("serial")
+public class Stmt implements Serializable{
 
 	private String theStmt = "";
 	private int stmtID = -1;

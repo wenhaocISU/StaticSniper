@@ -12,4 +12,8 @@ public class IfStmt extends Stmt{
 		this.targetLabel = targetLabel;
 	}
 	
+	public boolean isIfZ() {
+		return (this.getTheStmt().split(" ")[0].endsWith("z"));
+	}
+	
 }

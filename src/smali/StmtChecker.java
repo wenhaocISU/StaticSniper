@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 public class StmtChecker {
 
+	///////////////////// signature base
+	
 	private static ArrayList<String> ifFormat = new ArrayList<String>(Arrays.asList(
 			"if-eq",
 			"if-ne",
@@ -140,6 +142,19 @@ public class StmtChecker {
 			"filled-new-array/range"
 	));
 	
+	private static ArrayList<String> gotoFormat = new ArrayList<String>(Arrays.asList(
+			"goto",
+			"goto/16",
+			"goto/32"
+	));
+	
+	private static String throwFormat = "throw";
+	
+	private static ArrayList<String> switchFormat = new ArrayList<String>(Arrays.asList(
+			"packed-switch",
+			"sparse-switch"
+	));
+	
 	private static ArrayList<String> otherComputationFormat_2v = new ArrayList<String>(Arrays.asList(
 			"instance-of",
 			"array-length",
@@ -179,12 +194,12 @@ public class StmtChecker {
 			"add-double", "sub-double", "mul-double", "dev-double", "rem-double"
 	));
 	
+	private static String checkCastFormat = "check-cast";
+	
 	private static ArrayList<String> otherFormat = new ArrayList<String>(Arrays.asList(
-			"check-cast",
 			"monitor-enter",
 			"monitor-exit",
-			"move-exception",
-			"throw"
+			"move-exception"
 	));
 	
 	public static boolean isGoto(String l) {
