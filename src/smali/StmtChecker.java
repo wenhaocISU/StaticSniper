@@ -76,10 +76,7 @@ public class StmtChecker {
 			"move/16",
 			"move-wide",
 			"move-wide/from16",
-			"move-wide/16"
-	));
-	
-	private static ArrayList<String> moveObjectFormat = new ArrayList<String>(Arrays.asList(
+			"move-wide/16",
 			"move-object",
 			"move-object/from16",
 			"move-object/16"
@@ -202,20 +199,70 @@ public class StmtChecker {
 			"move-exception"
 	));
 	
+	public static boolean isArrayPut(String l) {
+		if (l.contains(" "))
+			return arrayPutFormat.contains(l.split(" ")[0]);
+		return false;
+	}
+	
+	public static boolean isArrayGet(String l) {
+		if (l.contains(" "))
+			return arrayGetFormat.contains(l.split(" ")[0]);
+		return false;
+	}
+	
+	public static boolean isConst(String l) {
+		for (String s : constFormat)
+			if (l.startsWith(s + " "))
+				return true;
+		return false;
+	}
+	
+	public static boolean isMove(String l) {
+		for (String s : moveFormat)
+			if (l.startsWith(s + " "))
+				return true;
+		return false;
+	}
+	
+	public static boolean isNew(String l) {
+		for (String s : newFormat)
+			if (l.startsWith(s + " "))
+				return true;
+		return false;
+	}
+	
+	
+	
+	public static boolean isV2OP(String l) {
+		for (String s : otherComputationFormat_2v)
+			if (l.startsWith(s + " "))
+				return true;
+		return false;
+	}
+
+	public static boolean isV3OP(String l) {
+		for (String s : otherComputationFormat_3v)
+			if (l.startsWith(s + " "))
+				return true;
+		return false;
+	}
+	
+	public static boolean isCheckCast(String l) {
+		return (l.startsWith(checkCastFormat));
+	}
+	
 	public static boolean isGoto(String l) {
-		if (l.startsWith("goto :") ||
-			l.startsWith("goto/16 :") ||
-			l.startsWith("goto/32 :"))
-			return true;
+		for (String s : gotoFormat)
+			if (l.startsWith(s + " :"))
+				return true;
 		return false;
 	}
 	
 	public static boolean isReturn(String l) {
-		if (l.startsWith("return-void") ||
-			l.startsWith("return-object ") ||
-			l.startsWith("return-wide ") ||
-			l.startsWith("return "))
-			return true;
+		for (String s : returnFormat)
+			if (l.startsWith(s))
+				return true;
 		return false;
 	}
 	
@@ -228,10 +275,9 @@ public class StmtChecker {
 	}
 	
 	public static boolean isMoveResult(String l) {
-		if (l.startsWith("move-result ") ||
-			l.startsWith("move-result-wide ") ||
-			l.startsWith("move-result-object "))
-			return true;
+		for (String s : moveResultFormat)
+			if (l.startsWith(s + " "))
+				return true;
 		return false;
 	}
 	
@@ -241,6 +287,7 @@ public class StmtChecker {
 		return false;
 	}
 	
+
 	public static boolean isPutField(String l) {
 		if (l.contains(" "))
 			return putFieldFormat.contains(l.split(" ")[0]);
@@ -248,16 +295,20 @@ public class StmtChecker {
 	}
 	
 	public static boolean isIfStmt(String l) {
-		if (l.contains(", :"))
+		if (l.contains(" "))
 			return ifFormat.contains(l.split(" ")[0]);
 		return false;
 	}
 	
 	public static boolean isSwitch(String l) {
-		if (l.startsWith("packed-switch ") ||
-			l.startsWith("sparse-switch "))
-			return true;
+		for (String s : switchFormat)
+			if (l.startsWith(s + " "))
+				return true;
 		return false;
+	}
+	
+	public static boolean isThrow(String l) {
+		return (l.startsWith(throwFormat + " "));
 	}
 	
 }
