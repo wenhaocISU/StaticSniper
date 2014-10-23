@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class IfStmt extends Stmt{
+public class IfStmt extends SmaliStmt{
 
 	private String targetLabel;
 

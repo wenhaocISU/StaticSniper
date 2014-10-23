@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import smali.BlockLabel;
+import smali.stmt.SmaliStmt;
 
 @SuppressWarnings("serial")
 public class StaticMethod implements Serializable {
@@ -18,6 +19,7 @@ public class StaticMethod implements Serializable {
 	private String jimpleCode, smaliCode;
 	private ArrayList<StaticJimpleStmt> jimpleStatements;
 	private ArrayList<StaticSmaliStmt> smaliStatements;
+	private ArrayList<SmaliStmt> smaliStmts;
 	private ArrayList<Integer> sourceLineNumbers;
 	private int returnLineNumber;
 	private ArrayList<String> inCallSourceSigs;

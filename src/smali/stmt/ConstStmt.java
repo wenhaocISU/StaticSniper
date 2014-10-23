@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class ConstStmt extends Stmt{
+public class ConstStmt extends SmaliStmt{
 
 	
 	

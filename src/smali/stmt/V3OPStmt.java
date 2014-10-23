@@ -1,5 +1,5 @@
 package smali.stmt;
 
-public class V3OPStmt extends Stmt{
+public class V3OPStmt extends SmaliStmt{
 
 }

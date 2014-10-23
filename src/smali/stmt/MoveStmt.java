@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class MoveStmt extends Stmt{
+public class MoveStmt extends SmaliStmt{
 
 	private int resultMovedFrom = -1;
 	

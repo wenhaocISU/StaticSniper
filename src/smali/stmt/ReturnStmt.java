@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class ReturnStmt extends Stmt {
+public class ReturnStmt extends SmaliStmt {
 
 	
 }

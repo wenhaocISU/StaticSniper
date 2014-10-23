@@ -5,7 +5,7 @@ import java.io.Serializable;
 import smali.BlockLabel;
 
 @SuppressWarnings("serial")
-public class Stmt implements Serializable{
+public class SmaliStmt implements Serializable{
 
 	private String theStmt = "";
 	private int stmtID = -1;

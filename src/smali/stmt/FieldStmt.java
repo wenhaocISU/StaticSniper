@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class FieldStmt extends Stmt {
+public class FieldStmt extends SmaliStmt {
 
 	private String fieldSig;
 	private boolean isGet = false;

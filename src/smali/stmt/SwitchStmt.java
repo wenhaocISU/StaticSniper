@@ -1,6 +1,6 @@
 package smali.stmt;
 
-public class SwitchStmt extends Stmt{
+public class SwitchStmt extends SmaliStmt{
 
 	private boolean isPswitch;
 	private boolean isSswitch;

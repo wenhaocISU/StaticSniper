@@ -1,5 +1,5 @@
 package smali.stmt;
 
-public class ThrowStmt extends Stmt{
+public class ThrowStmt extends SmaliStmt{
 
 }
