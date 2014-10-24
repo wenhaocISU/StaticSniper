@@ -367,7 +367,6 @@ public class SmaliParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static String ClassNameDexToJava(String dexCN) {

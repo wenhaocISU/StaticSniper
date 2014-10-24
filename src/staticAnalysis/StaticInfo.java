@@ -124,9 +124,7 @@ public class StaticInfo {
 				NodeList actions = e.getElementsByTagName("action");
 				for (int j = 0, len2 = actions.getLength(); j < len2; j++) {
 					Node action = actions.item(j);
-					if (action.getAttributes().getNamedItem("android:name")
-							.getNodeValue()
-							.equals("android.intent.action.MAIN")) {
+					if (action.getAttributes().getNamedItem("android:name").getNodeValue().equals("android.intent.action.MAIN")) {
 						c.setIsMainActivity(true);
 						mainActFound = true;
 						break;
